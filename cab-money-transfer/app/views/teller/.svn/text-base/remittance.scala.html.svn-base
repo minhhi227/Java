@@ -1,0 +1,1003 @@
+@import com.fasterxml.jackson.databind.JsonNode
+
+@(user: User, listCurrencies: List[CurrencyExchange], strTypeSender:String, nav: String, blockedRemittanceTransactions: List[SenderReceiverTransaction], rejectedAndApprovedTxs: List[SenderReceiverTransaction], continuingTransactionId: String, notificationInterval: String)
+
+@main("REMITTANCE", user, nav, blockedRemittanceTransactions, rejectedAndApprovedTxs, notificationInterval, listCurrencies) {
+	<!-- JS dataTables -->
+	<script type="text/javascript" language="javascript" src="@routes.Assets.at("plugins/datatables-1.10.2/media/js/jquery.js")"></script>
+	<script type="text/javascript" language="javascript" src="@routes.Assets.at("plugins/datatables-1.10.2/media/js/jquery.dataTables.min.js")"></script>
+	<script type="text/javascript" language="javascript" src="@routes.Assets.at("plugins/datatables-1.10.2/fnReloadAjax.js")"></script>
+	<!-- JS Bootstrap -->
+	<script type="text/javascript" src="@routes.Assets.at("bootstrap/js/bootstrap.min.js")" defer></script>
+	<script type="text/javascript" src="@routes.Assets.at("plugins/jquery.numeric.min.js")"></script>
+	<script type="text/javascript" src="@routes.Assets.at("plugins/bootbox.min.js")"></script>
+	<!-- JS Print -->
+	<script type="text/javascript" src="@routes.Assets.at("plugins/jquery.print.js")"></script>
+	@if(user.getRole().getCode()=="role_teller"){
+		<!-- easyUi -->
+		<script type="text/javascript" src="@routes.Assets.at("plugins/easyui/jquery.easyui.min.js")"></script>
+		<link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("plugins/easyui/themes/bootstrap/easyui.css")"/>
+		<!-- end easyUi -->
+	}
+	<div class="content-wrapper">
+		<div>
+			<a data-toggle="modal" class="btn btn-primary pull-right" id="btnAdvanceSearchRemittance">Advanced Search</a>
+		</div>
+		<!-- start form add / update remittance -->
+		<form id="frmRemittance" class="form-horizontal" role="form" style="margin-top:10px;">
+<!--			<div>-->
+<!--				<div class="row">-->
+<!--					<div class="col-md-4">-->
+<!--						<h4 class="modal-title" id="myModalLabel"></h4>-->
+<!--					</div>-->
+<!--					<div class="col-md-4">-->
+<!--						<label for="txtDateTransaction">Date</label>-->
+<!--						<input type="text" style="height:25px;width:210px;" class="form-control" id="txtDateTransaction" name="txtDateTransaction" placeholder="Date" value="">-->
+<!--					</div>-->
+<!--					<div class="col-md-4">-->
+<!--						<label for="txtBankRef">Bank's Reference No.</label>-->
+<!--						<input type="text" style="height:25px;width:210px;" class="form-control" id="txtBankRef" name="txtBankRef" placeholder="Bank's Reference No" value="">-->
+<!--					 </div>-->
+<!--				</div>-->
+<!--			</div>-->
+			<div>
+				<div id="remittance-alert-success" class="alert alert-success hidden" role="alert" alert-dismissable><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Saved successfully</div>
+				<div id="remittance-alert-warning" class="alert alert-warning hidden" role="alert" alert-dismissable><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Receiver exists</div>
+				<div id="remittance-alert-danger" class="alert alert-danger hidden" role="alert" alert-dismissable><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Error occurred!</div>
+				<h4>APPLICANT'S DETAILS</h4><hr/>
+				<div>
+					<div class="form-group row">
+						<label for="txtFullName" class="col-sm-2 control-label">Full name</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control col-sm-2" id="txtFullName" name="txtFullName">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="txtAccNumber" class="col-sm-2 control-label">A/C number</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control col-sm-2" id="txtAccNumber" name="txtAccNumber" disabled="disabled">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="txtDOB" class="col-sm-2 control-label">Date of birth</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control col-sm-2" id="txtDOB" name="txtDOB" disabled="disabled">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="txtPassportNo" class="col-sm-2 control-label">ID/Passport No</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control col-sm-2" id="txtPassportNo" name="txtPassportNo" disabled="disabled">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="txtExpireDate" class="col-sm-2 control-label">Expire date</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control col-sm-2" id="txtExpireDate" name="txtExpireDate" disabled="disabled">
+							<input type="hidden" id="hidTypeSender" name="hidTypeSender" value=""/>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="taAddress" class="col-sm-2 control-label">Address</label>
+						<div class="col-sm-8">
+							<input type="text" class="form-control col-sm-2" id="taAddress" name="taAddress" value="" disabled="disabled"/>
+						</div>
+					</div>
+				</div>
+				<h4>BENEFICIARY'S DETAILS</h4><hr/>
+				<div>
+					<div class="form-group">
+						<label for="txtInterBank" class="col-sm-2 control-label">Inter Bank</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control col-sm-2" id="txtInterBank" name="txtInterBank">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="txtSwiftCode" class="col-sm-2 control-label">Swift Code</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control col-sm-2" id="txtSwiftCode" name="txtSwiftCode">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="txtBankAddress" class="col-sm-2 control-label">Bank's Address</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control col-sm-2" id="txtBankAddress" name="txtBankAddress">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="txtRcAccNumber" class="col-sm-2 control-label">A/C Number</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control col-sm-2" id="txtRcAccNumber" name="txtRcAccNumber">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="txtRcFullName" class="col-sm-2 control-label">Full Name</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control col-sm-2" id="txtRcFullName" name="txtRcFullName">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="txtRcPurpose" class="col-sm-2 control-label">Purpose</label>
+						<div class="col-sm-8">
+							<input type="text" class="form-control col-sm-2" id="txtRcPurpose" name="txtRcPurpose">
+						</div>
+					</div>
+				</div>					
+<!--					<h3>Mode of Payment</h3><hr/>-->
+<!--					<div> -->
+<!--						<div class="radio"> -->
+<!--							<label> <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1" checked>Cash</label> -->
+<!--						</div> -->
+<!--						<div class="radio"> -->
+<!--							<label> <input type="radio" name="optionsRadios" id="optionsRadios2" value="option2">Cheque No......</label> -->
+<!--						</div> -->
+<!--						<div class="radio"> -->
+<!--							<label> <input type="radio" name="optionsRadios" id="optionsRadios2" value="option3">I/We authorize the bank to debit my/our account no: ...................</label> -->
+<!--						</div> -->
+<!--					</div>-->
+					<h4>FILL AMOUNT</h4><hr/>
+				<div>
+					<div class="row">
+						<div class="col-xs-6 col-sm-3 form-group" style="padding-left: 34px;">
+							<b>Foreign Amount</b>
+							<input type="text" class="form-control col-sm-2" id="txtAmount" name="txtAmount">
+						</div>
+						<div class="col-xs-6 col-sm-3">
+							<b>Currency</b>
+						  	<select class="form-control" name="selCurrency" id="selCurrency">
+						  	@for(currency <- listCurrencies){
+						  		<option value="@currency.getId()">@currency.getName()</option>
+						  	}
+							</select>
+						</div>
+						<div class="col-xs-6 col-sm-3">
+							<b>Exchange rate</b>
+							<input type="text" class="form-control col-sm-2" id="txtExchangeRate" name="txtExchangeRate">
+						</div>
+						<div class="col-xs-6 col-sm-3" style="padding-right: 23px;">
+							<b>USD Equivalent</b>
+							<div class="form-group">
+								<input type="text" class="form-control col-sm-2" id="txtUsdEquivalent" name="txtUsdEquivalent" disabled="disabled">
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-xs-6 col-sm-3 form-group" style="padding-left: 34px;">
+							<b>Fee</b>
+							<input type="text" class="form-control col-sm-2" id="txtFee" name="txtFee">
+						</div>
+						<div class="col-xs-6 col-sm-3">
+							<b>Cable</b>
+							<input type="text" class="form-control col-sm-2" id="txtCable" name="txtCable">
+						</div>
+						<div class="col-xs-6 col-sm-3">
+							<b>Postage</b>
+							<input type="text" class="form-control col-sm-2" id="txtPostage" name="txtPostage">
+						</div>
+						<div class="col-xs-6 col-sm-2">
+							<b>Other</b>
+							<div class="form-group">
+								<div class="input-group">
+									<input type="text" class="form-control col-sm-2" id="txtOther" name="txtOther" value="0">
+									<div class="input-group-addon" id="divCharge"></div>
+									<input type="hidden" class="form-control col-sm-2" id="txtCharge" name="txtCharge" placeholder="" value="SHA">
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-xs-6 col-sm-3">
+							&nbsp;
+						</div>
+						<div class="col-xs-6 col-sm-3">
+							&nbsp;
+						</div>
+						<div class="col-xs-6 col-sm-2">
+							&nbsp;
+						</div>
+						<div class="col-xs-6 col-sm-4">
+							<div class="form-group">
+								<label for="txtTotalAmount" class="col-sm-4 control-label">Total USD</label>
+								<div class="col-sm-8">
+									<input type="text" class="form-control col-sm-2" id="txtTotalAmount" name="txtTotalAmount" disabled="disabled">
+								</div>
+							</div>
+						</div>						
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span> Preview</button>
+				<input type="hidden" name="hidSenderId"/>
+				<input type="hidden" name="hidRemittanceId" id="hidRemittanceId"/>
+				<input type="hidden" name="hidRecieverId"/>
+				<input type="hidden" name="hidProcess" id="hidProcess"/>
+				<input type="hidden" name="hidRcFullName" id="hidRcFullName"/>
+				<input type="hidden" name="hidDateTransaction" id="hidDateTransaction"/>
+				<input type="hidden" name="hidBankRef" id="hidBankRef"/>
+			</div>
+		</form>		
+
+	</div>
+		
+    <!-- modal remittance advanced search -->
+	<div id="modalAdvancedSearch" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalAdvancedSearch" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+		<div class="modal-dialog" style="width:80%;">
+			<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+						<h4 class="modal-title" id="popupAddEditReceiverTitle">Advanced Search</h4>
+					</div>
+					<form role="form" id="frmAdvancedSearch" name="frmAdvancedSearch" data-toggle="validator">
+						<div class="modal-body" style="width:500px;margin:auto;">
+							<div class="row">
+								<div class="col-md-6 form-group">
+									<label class="control-label">From</label>
+									<div class="input-group">
+									<input type="text" name="searchFromDate" id="advFromDate" class="form-control" placeholder="dd/mm/yyyy"/>
+									<span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+									</div>
+								</div>
+								<div class="col-md-6 form-group">
+									<label class="control-label">To</label>
+									<div class="input-group">
+									<input type="text" name="searchToDate" id="advToDate" class="form-control" placeholder="dd/mm/yyyy"/>
+									<span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-md-6">
+									<label>Sender Name</label>
+									<input type="text" name="advSenderFullName" class="form-control" placeholder="any..."/>
+								</div>
+								<div class="col-md-6">
+									<label>Sender Account No.</label>
+									<input type="text" name="advSenderAccountNo" class="form-control" placeholder="any..."/>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-md-6">
+									<label>Sender ID/Passport No.</label>
+									<input type="text" name="advSenderIdentityNo" class="form-control" placeholder="any..."/>
+								</div>					
+							</div>
+							<div class="row">
+								<div class="col-md-6">
+									<label>Intermediary Bank</label>
+									<input type="text" name="advIntermediaryBank" class="form-control" placeholder="any..."/>
+								</div>
+								<div class="col-md-6">
+									<label>Swift Code</label>
+									<input type="text" name="advSwiftCode" class="form-control" placeholder="any..."/>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-md-6">
+									<label>Receiver Account No.</label>
+									<input type="text" name="advReceiverAccountNo" class="form-control" placeholder="any..."/>
+								</div>
+								<div class="col-md-6">
+									<label>Receiver Name</label>
+									<input type="text" name="advReceiverFullName" class="form-control" placeholder="any..."/>
+								</div>
+							</div>												
+						</div>
+						<div class="modal-footer">
+							<button id="btnAdvancedSearchRemittance" type="submit" class="btn btn-primary">Search</button>
+<!-- 							<button id="btnCancelAdvanceSearch" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button> -->
+							<a id="btnClearSearch" href="#" class="btn btn-primary">Clear Search</a>
+						</div>
+					</form>
+					<div class="row" style="padding:0;margin:0;">
+						<input type="hidden" name="hidListTypeSender" value="@strTypeSender"/>
+				        <div class="col-md-12">
+				          	<table id="tbRemittance" class="display cell-border compact" cellspacing="0" width="100%">
+								<thead>
+									<tr>
+										<th>N&deg;</th>
+										<th width="25px">ID</th>
+										<th width="200px">Sender</th>
+										<th width="190px">Receiver</th>
+										<th width="70px">Sent Date</th>
+										<th width="100px">Bank/Swift Code</th>
+										<th width="70px">Amount</th>
+										<th width="60px">Currency</th>
+										<th width="60px">Exc. Rate</th>
+										<th width="70px">USD Equi.</th>
+										<th width="50px">Fee</th>
+										<th width="50px">Cable</th>	
+									</tr>
+								</thead>
+								<tfoot></tfoot>
+								<tbody></tbody>
+							</table>
+				        </div>
+			        </div>
+			</div>			
+		</div>
+	</div>
+	<!-- end pop up sender advanced search view -->
+	
+	<script type="text/javascript" language="javascript">
+		var colNo = 0;
+		var colId = 1;
+		var colSender = 2;
+		var colReceiver = 3;
+		var colSentDate = 4;
+		var colSwiftCode = 5;
+		var colAmount = 6;
+		var colCurrency = 7;
+		var colExchangeRate = 8;
+		var colUSDEqivalent = 9;
+		var colFee = 10;
+		var colCable = 11;
+		
+		var oTable;
+		var ruleFilleAmount = {};
+		
+		function OnloadRuleFillAmountFunction (){
+			$.ajax({
+				url: "@routes.RemittanceController.getRuleFillAmount()",
+				type: "get",
+				dataType: 'json',
+	   			contentType : "application/json",
+				success: function(response) {
+					ruleFilleAmount = response;
+				},
+				error: function(jqXHR, textStatus, errorThrown){
+					bootbox.alert(jqXHR.status + ' : ' + textStatus + ', ' + jqXHR.statusText, function() {});
+				}
+			});
+		}
+
+		$(document).ready(function() {
+			OnloadRuleFillAmountFunction();
+			
+			/* date picker start date */
+			var dpsearchFromDate = new dhtmlXCalendarObject(["advFromDate"]);
+			dpsearchFromDate.setDateFormat("%d/%m/%Y");
+			$("input[name=searchFromDate]").val(dpsearchFromDate.getFormatedDate("%d/%m/%Y", new Date()));
+			
+			/* date picker end date */
+			var dpsearchToDate = new dhtmlXCalendarObject(["advToDate"]);
+			dpsearchToDate.setDateFormat("%d/%m/%Y");
+			$("input[name=searchToDate]").val(dpsearchToDate.getFormatedDate("%d/%m/%Y", new Date()));
+
+			/* date picker end date */
+			var dpExpireDate = new dhtmlXCalendarObject(["txtExpireDate"]);
+			dpExpireDate.setDateFormat("%d/%m/%Y");
+			
+			var dpDOB = new dhtmlXCalendarObject(["txtDOB"]);
+			dpDOB.setDateFormat("%d/%m/%Y");
+			
+			$('[name="txtAmount"]').numeric();
+			$('[name="txtExchangeRate"]').numeric();
+			$('[name="txtFee"]').numeric();
+			$('[name="txtCable"]').numeric();
+			$('[name="txtPostage"]').numeric();
+			$('[name="txtOther"]').numeric();
+			
+			$('input[name="txtOther"]').val("0");
+			$('#divCharge').text("SHA");
+			
+			 oTable = $('#tbRemittance').dataTable( {
+			    "oLanguage": {
+				    "sSearch": " "
+				},
+				"columnDefs": [ 
+					{"targets":[colNo], "sortable":false, "searchable":false},
+					{"targets":[colId], "visible":false, "searchable":false}
+				],
+				"bProcessing": true,
+				"bServerSide": true,	  
+				"sAjaxSource": "@routes.RemittanceController.getRemittanceList()",
+				"bAutoWidth": false,
+				"dom": 'flt<"advanceSearch">ip',
+				"bPaginate": true,
+				"bFilter": true,
+				"bInfo": true,
+				"bLengthChange": true,
+				"deferLoading": 0,
+		        scrollCollapse: true,
+				"fnServerParams": function ( aoData ) {
+					var searchContainer = $("#frmAdvancedSearch");
+					searchContainer.find('input[type="text"][value!=""],input[type="radio"]:checked,input[type="checkbox"]:checked,textarea[value!=""],select[value!=""]').each(function () {
+		                // all textboxes, radio buttons, checkboxes, textareas, and selects that actually have a value associated with them
+		                var element = $(this), value = element.val();
+		                if (typeof value === "string") {
+		                	aoData.push({ "name": element.attr("name"), "value": value });
+		                }
+		                else if (Object.prototype.toString.apply(value) === '[object Array]') {
+		                    // multi select since it has an array of selected values
+		                    var i;
+		                    for (i = 0; i < value.length; i++) {
+		                    	aoData.push({ "name": element.attr("name"), "value": value[i] });
+		                    }
+		                }
+		            });
+			    },
+			    fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+					$('td', nRow).on('dblclick', function() { 
+						var requestUrl = '@routes.RemittanceController.getById()' + "?transactionId=" + aData[colId];
+						showModalRemittance(requestUrl, "@user.getRole().getCode()");
+					});
+				}
+			} );
+
+			@if(continuingTransactionId != null){
+				var requestUrl = '@routes.RemittanceController.getById()' + "?transactionId=@continuingTransactionId";
+				showModalRemittance(requestUrl, "@user.getRole().getCode()");
+			}
+
+			//$('div.dataTables_filter label').append('&nbsp;<a id="btnClearSearch" href="#" class="btn btn-primary">Clear Search</a>');
+
+			/* Validate form advanced search remittance and submit */
+			dpsearchFromDate.attachEvent("onClick", function(date){
+				$('#frmAdvancedSearch').bootstrapValidator('revalidateField', 'searchFromDate');
+			});
+			dpsearchToDate.attachEvent("onClick", function(date){
+				$('#frmAdvancedSearch').bootstrapValidator('revalidateField', 'searchToDate');
+			});	
+		    $('#frmAdvancedSearch').bootstrapValidator({
+		    	container: 'tooltip',
+		    	excluded: [':disabled', ':hidden', ':not(:visible)'],
+		    	live: 'enabled',
+		        feedbackIcons: {
+		            valid: 'glyphicon',
+		            invalid: 'glyphicon',
+		            validating: 'glyphicon'
+		        },
+		        fields:{
+		        	searchFromDate:{
+						validators:{
+							date: {
+								format: 'DD/MM/YYYY',
+								message: 'Invalid date'
+							}
+						}
+					},
+					searchToDate:{
+						validators:{
+							date: {
+								format: 'DD/MM/YYYY',
+								message: 'Invalid date'
+							}
+						}
+					}					
+			    }
+		    })	        
+			.on('success.form.bv', function(e) {
+				e.preventDefault();
+				oTable.fnReloadAjax();			
+			});	    
+	        
+	        $searchContainerInputs = $('#frmAdvancedSearch').find('input[type="text"],input[type="radio"],input[type="checkbox"],select,textarea');
+	        
+	        $('#btnAdvanceSearchRemittance').click(function(){
+				$('#frmAdvancedSearch').data('bootstrapValidator').resetForm();
+				$('#modalAdvancedSearch').modal("show");
+			});
+	        
+	        $("#btnClearSearch").click(function () {
+	        	$searchContainerInputs.each(function () {
+	                var $input = $(this),
+	                tagName = this.tagName.toLowerCase();
+	                if (tagName === "input") {
+	                    var type = $input.attr("type").toLowerCase();
+	                    if (type === "checkbox"
+	                    || type === "radio") {
+	                        $input.removeAttr("checked");
+	                    }
+	                    else if (type === "text") {
+	                        $input.val("");
+	                    }
+	                }
+	                else if (tagName === "select") {
+	                    if ($input.attr("multiple") !== undefined) {
+	                        $input.val([]);
+	                    }
+	                    else {
+	                        $input.val("");
+	                    }
+	                }
+	                else if (tagName === "textarea") {
+	                    $input.val("");
+	                }
+	            });
+	        	$("input[name=searchFromDate]").val(dpsearchFromDate.getFormatedDate("%d/%m/%Y", new Date()));
+				$("input[name=searchToDate]").val(dpsearchToDate.getFormatedDate("%d/%m/%Y", new Date()));
+	            oTable.fnReloadAjax();
+	        });
+			
+			if(document.getElementById("tbRemittance_filter") != null) {
+				var searchFilter = $('#tbRemittance_filter').find('input[type="search"]');
+				searchFilter.each(function () {
+					var $input = $(this);
+					$input.hide();
+				});
+			}
+			
+			enableDisableControlById=function(objectId) {
+				var recieverArea = $('#' + objectId).find('input[type="text"]');
+				recieverArea.each(function () {
+					var $input = $(this),
+					tagName = this.tagName.toLowerCase();
+					if (tagName === "input") {
+						var type = $input.attr("type").toLowerCase();
+						if (type === "text") {
+							$input.removeAttr('disabled');
+						}
+					}
+				});
+			}
+			
+			$popupAddRemittantContainerInputs = $('#popupAddUpdateRemittant').find('input[type="text"],input[type="hidden"],input[type="radio"],input[type="checkbox"],select,textarea');
+			
+			// Reset the Tooltip container form
+		    $('#resetButton').on('click', function(e) {
+		    	clearAndResetForm("frmRemittance");
+		    });
+			
+			$('#resetOnClose').on('click', function(e) {
+				clearAndResetForm("frmRemittance");
+		    });
+			$('.textbox-text.validatebox-text').on('input',function(){
+				//$('#frmRemittance').bootstrapValidator('revalidateField', 'txtAccNumber');
+				$('#frmRemittance').bootstrapValidator('revalidateField', 'txtInterBank');
+				$('#frmRemittance').bootstrapValidator('revalidateField', 'txtSwiftCode');
+				$('#frmRemittance').bootstrapValidator('revalidateField', 'txtRcAccNumber');
+				$('#frmRemittance').bootstrapValidator('revalidateField', 'txtAmount');
+				$('#frmRemittance').bootstrapValidator('revalidateField', 'txtFee');
+			});		
+			$('#frmRemittance').bootstrapValidator({
+				container: 'tooltip',
+		        message: 'This value is not valid',
+		        feedbackIcons: {
+		            valid: 'glyphicon',
+		            invalid: 'glyphicon',
+		            validating: 'glyphicon'
+		        },
+		        fields: {
+		        	'txtFullName': {
+		                validators: {
+		                	notEmpty: { message: 'Required' }
+		                }
+		            },
+			       /*  'txtAccNumber': {
+			            validators: {
+			            	notEmpty: { message: 'Required' }
+			            }
+			        }, */
+					'txtInterBank': {
+		                validators: {
+		                	notEmpty: { message: 'Required' }
+		                }
+		            },
+					'txtSwiftCode': {
+		                validators: {
+		                	notEmpty: { message: 'Required' }
+		                }
+		            },
+		            'txtRcAccNumber': {
+		                validators: {
+		                	notEmpty: { message: 'Required' }
+		                }
+		            },
+					'txtRcFullName': {
+		                validators: {
+		                	notEmpty: { message: 'Required' }
+		                }
+		            },
+			        'txtAmount': {
+		                validators: {
+		                	notEmpty: { message: 'Required' }
+		                }
+		            },
+		            'txtFee': {
+		                validators: {
+		                	notEmpty: { message: 'Required' },
+		                	greaterThan: {
+		                		message: 'Fee must be greater than 15.',
+		                		value: 15
+		                	}
+		                }
+		            }
+		        }
+		    })
+		    .on('success.form.bv', function(e) {
+	            e.preventDefault();       
+	            $("input[name=hidSenderId]").val(senderId);
+	            $("input[name=hidRecieverId]").val(receiverId);
+	            $('#hidRcFullName').val($("#txtRcFullName").combo('getText'));
+	            var $form = $(e.target);// Get the form instance 
+	            var data = {};
+	            $form.find('[name]').each(function(index, value){
+					var that = $(this),
+						name = that.attr('name'),
+						value = that.val();
+					if(that.attr('type') != null && that.attr('type')=='checkbox'){
+						data[name] = that.prop('checked');
+					}else{
+						data[name] = value;
+					}
+				});
+	            
+	            // Use Ajax to submit form data 
+	            $.ajax({
+	       			url: "@routes.RemittanceController.previewRemittanceTransaction()",
+	       			type: "post",
+	       			dataType: 'json',
+	       			data: JSON.stringify(data),
+	       			contentType : "application/json",
+	       			success: function(response) {
+	       				if(response.result == 'block') {
+	       					bootbox.alert(response.message, function() {
+	       					});
+	       				}
+	       				else if(response.result == 'warning'){	  
+	       					bootbox.dialog({
+	       						message: response.message ,
+	       						title: "Warning",
+	       						buttons: {
+	       							success: {
+	       								label: "NO",
+	       								className: "btn-default",
+	       								callback: function() {
+	       									$('#frmRemittance').data('bootstrapValidator').resetForm();
+	       								}
+	       							},
+	       							main: {
+	       								label: "Yes",
+	       								className: "btn-primary",
+	       								callback: function() {
+	       									// Save transaction as blocking 
+	       									var actionurl = "@routes.RemittanceController.saveOrUpdateRemittanceTransaction()";
+	       							        //do your own request an handle the results
+	       							         $.ajax({
+	       							                url: actionurl,
+	       							                type: 'post',
+	       							                dataType: 'json',
+	       							                success: function(data) {
+	       							                	clearAndResetForm("frmRemittance");
+	       							                    location.reload();
+	       							                }
+	       							         });
+	       								}
+	       							}
+	       						}
+	       					});
+				       	}
+	       				else if(response == 'failed'){	
+				       		$('#remittance-alert-danger').removeClass('hidden');
+			       			setTimeout(function(){
+			       				$('#remittance-alert-danger').addClass('hidden');
+			       			}, 3000);
+					    }
+	       				else{
+			       			updateRemittanceFormForPrint(response);
+			       			$('#popupRemittanceApplicationForm').modal("show");
+			       			$('#frmRemittance').data('bootstrapValidator').resetForm();
+			       		}
+		       		},
+		            error: function(jqXHR, textStatus, errorThrown){
+		            	bootbox.alert(jqXHR.status + ' : ' + textStatus + ', ' + jqXHR.statusText, function() {});
+		            }
+		       	});
+		    });
+			
+			
+			<!-- start suggestion combo work only with role teller -->
+			@if(user.getRole().getCode()=="role_teller"){
+<!--				$('#txtFullName').combogrid('grid').datagrid('loadData', {"total":0,"rows":[]});-->
+<!--			    $('#txtRcFullName').combogrid('grid').datagrid('loadData', {"total":0,"rows":[]});-->
+<!--			    $('#txtFullName').combogrid('clear');-->
+<!--			    $('#txtRcFullName').combogrid('clear');-->
+<!--			    $('#txtFullName').combo('clear');-->
+<!--			    $('#txtRcFullName').combo('clear');-->
+				$("#hidProcess").val("1");
+				senderId = 0;
+				receiverId = 0;
+				$('#frmRemittance').bootstrapValidator('resetForm', true);
+				
+				/* $.ajax({
+	       			url: "@routes.RemittanceController.getBankReference()",
+	       			type: "get",
+	       			dataType: 'json',
+	       			contentType : "application/json",
+	       			success: function(response) {
+	       				clearForm("frmRemittance");
+	       				$("#hidBankRef").val(response.bankRef);
+						$("#hidDateTransaction").val(response.dateTransaction);
+		       		},
+		            error: function(jqXHR, textStatus, errorThrown){
+		            	bootbox.alert(jqXHR.status + ' : ' + textStatus + ', ' + jqXHR.statusText, function() {});
+		            }
+		       	}); */
+		       	
+				$('button[name="btnReject"]').hide();
+				$('button[name="btnApprove"]').hide();
+
+				$(".notif-action-button").on("click", function(){
+					bootbox.dialog({
+						message: "Do you want to cancel the transaction ?" ,
+						title: "Warning",
+						buttons: {
+							success: {
+								label: "NO",
+								className: "btn-default",
+								callback: function() {
+
+								}
+							},
+							main: {
+								label: "Yes",
+								className: "btn-primary",
+								callback: function() {
+									var transactionId = $("#hidRemittanceId").val();
+									var status = "transaction_canceled";
+									$.ajax({
+						       			url: '@routes.RemittanceController.updateTransactionStatus()' + '?transactionId=' + transactionId + "&status=" + status,
+						       			type: 'post',
+						       			success: function(response) {
+						       				oTable.fnReloadAjax();
+							       		},
+							            error: function(jqXHR, textStatus, errorThrown){
+										    console.log(jqXHR.status + ' : ' + textStatus + ', ' + jqXHR.statusText);
+											bootbox.alert(jqXHR.statusText, function() {
+
+					       					});
+							            }
+							       	});
+								}
+							}
+						}
+					});
+				});
+				
+				$('#txtFullName').combogrid({
+	                panelWidth:500,
+	                name:'comboFullName',
+	                height: 28,
+	                width: "100%",
+	                url: '@routes.SenderController.filterSenderByFullName()',
+	                idField:'id',
+	                textField:'fullName',
+	                fitColumns:true,
+	                loadMsg: 'Loading ...',
+	                method: 'get',
+	                mode:'remote',
+	                fitColumns:true,
+	                queryParams: {
+	                	minLength: '3'
+	            	},
+	                columns:[[
+	                    {field:'accountNo',title:'Account No',width:30},
+	                    {field:'fullName',title:'Full Name',width:40},
+	                    {field:'identityNumber',title:'Identity Number',width:30}
+	                ]],
+	                onSelect: function (rowIndex, rowData) {
+	                    var grid = $('#txtFullName').combogrid('grid');	// get datagrid object
+	                    var data = grid.datagrid('getSelected');	
+	                    senderId = data.id;
+			        	updateValueSenderPopup(data);
+			        	
+			        	$('#frmRemittance').data('bootstrapValidator').resetForm(true);
+			        	
+						var urlRequest = '@routes.RemittanceController.getRecieverBySenderId()' + '?senderId=' + senderId;
+						$('#txtRcFullName').combogrid('grid').datagrid({
+							panelWidth:500,
+							url: urlRequest,
+			                idField:'id',
+			                textField:'fullName',
+			                fitColumns:true,
+			                loadMsg: 'Loading ...',
+			                method: 'get',
+			                mode:'remote',
+			                fitColumns:true,
+			                queryParams: {
+			                	minLength: '3'
+			            	},
+			                columns:[[
+			                    {field:'accountNo',title:'Account No',width:30},
+			                    {field:'fullName',title:'Full Name',width:40},
+			                    {field:'identityNumber',title:'Identity Number',width:30}
+			                ]]
+						});
+	                },
+	                onChange: function(newValue,oldValue){
+	                	if(newValue.length >= 3 && !isNumber(newValue)) {
+	                		$('#txtFullName').combogrid('grid').datagrid({
+	                			url: '@routes.SenderController.filterSenderByFullName()',
+	    		                idField:'id',
+	    		                textField:'fullName',
+	    		                fitColumns:true,
+	    		                loadMsg: 'Loading ...',
+	    		                method: 'get',
+	    		                mode:'remote',
+	    		                fitColumns:true,
+	    		                queryParams: {
+	    		                	minLength: '3'
+	    		            	},
+	    		            	columns:[[
+	    		                          {field:'accountNo',title:'Account No',width:30},
+	    		                          {field:'fullName',title:'Full Name',width:40},
+	    		                          {field:'identityNumber',title:'Identity Number',width:30}
+	    		                      ]]
+	    					});
+	                	}
+	                }
+	            });
+				
+				// ============= Receiver ===============
+				$( "#txtRcFullName" ).combogrid({
+					panelWidth:500,
+					height: 28,
+					width: "100%",
+	                url: '@routes.ReceiverController.filterByFullNameANDAccountNo()',
+	                idField:'id',
+	                textField:'fullName',
+	                fitColumns:true,
+	                loadMsg: 'Loading ...',
+	                method: 'get',
+	                mode:'remote',
+	                fitColumns:true,
+	                queryParams: {
+	                	minLength: '3'
+	            	},
+	                columns:[[
+	                    {field:'accountNo',title:'Account No',width:30},
+	                    {field:'fullName',title:'Full Name',width:40},
+	                    {field:'swiftCode',title:'Swift Code',width:30}
+	                ]],
+	                onSelect: function (rowIndex, rowData) {
+						var grid = $('#txtRcFullName').combogrid('grid');	// get datagrid object
+						var data = grid.datagrid('getSelected');	
+						receiverId = data.id;
+						updateValueRecieverPopup(data);
+						
+						var urlRequest = '@routes.RemittanceController.getSenderByRecieverId()' + '?receiverId=' + receiverId;
+						$('#txtFullName').combogrid('grid').datagrid({
+							panelWidth:500,
+							url: urlRequest,
+						             idField:'id',
+						             textField:'fullName',
+						             fitColumns:true,
+						             loadMsg: 'Loading ...',
+						             method: 'get',
+						             mode:'remote',
+						             fitColumns:true,
+						             queryParams: {
+						             	minLength: '3'
+						         	},
+						         	columns:[[
+						                   {field:'accountNo',title:'Account No',width:30},
+						                   {field:'fullName',title:'Full Name',width:40},
+						                   {field:'identityNumber',title:'Identity Number',width:30}
+						                ]]
+						});
+	                },
+	                onLoadSuccess: function(data){
+	                	if (data.rows.length){
+	    					$(this).combogrid('setValue',data.rows[0].id);
+	    				}
+	                },
+	                onChange: function(newValue,oldValue){
+	                	
+	                	var vSenderName = $('#txtFullName').combo('getText');
+	                	receiverId = 0;
+	                	if(newValue.length >= 3 && !isNumber(newValue)) {
+	                		$('#txtRcFullName').combogrid('grid').datagrid({
+	    						url: 'receiver/filterByFullNameANDAccountNo',
+	    		                idField:'id',
+	    		                textField:'fullName',
+	    		                fitColumns:true,
+	    		                loadMsg: 'Loading ...',
+	    		                method: 'get',
+	    		                mode:'remote',
+	    		                fitColumns:true,
+	    		                queryParams: {
+	    		                	minLength: '3'
+	    		            	},
+	    		                columns:[[
+	    		                    {field:'accountNo',title:'Account No',width:30},
+	    		                    {field:'fullName',title:'Full Name',width:40},
+	    		                    {field:'identityNumber',title:'Identity Number',width:30}
+	    		                ]]
+	    					});
+	                	}
+	                	$("#txtFullName").combo('setValue', vSenderName).combo('setText', vSenderName);
+	                }
+				});
+			}
+			<!-- end suggestion combo work only with role teller -->
+			
+			$( "#txtOther" ).keyup(function() {
+				var vOther = ($( "#txtOther" ).val() != "") ? parseInt($( "#txtOther" ).val()) : 0;
+				if(vOther == 0) {
+					$("#txtCharge").val("SHA");
+					$("#divCharge").text("SHA");
+				}
+				else if(vOther >= 8) {
+					$("#txtCharge").val("OUR");
+					$("#divCharge").text("OUR");
+				} else {
+					$("#txtCharge").val("");
+					$("#divCharge").text("");
+				}
+			});
+			
+			/* $( "#txtFee" ).change(function() {
+				var vFee = ($( "#txtFee" ).val() != "") ? $( "#txtFee" ).val() : 0;
+				if(vFee < 15) {
+					bootbox.alert("Fee must be greater than 15.", function() {});
+				}
+			}); */
+			
+			$("#frmRemittanceApplication").submit(function(e) {
+		        e.preventDefault();
+		        var data = {};
+		        data["dateTransaction"] = $('#dateTransaction').val();
+		        data["bankRef"] = $('#bankRef').val();
+		        $.ajax({
+	                url: '@routes.RemittanceController.saveOrUpdateRemittanceTransaction()',
+	                type: 'post',
+					dataType: 'json',
+					data: JSON.stringify(data),
+					contentType : "application/json",
+	                success: function(response) {
+		                if(response == 'success'){
+			                $('#pdateTransaction').text(data["dateTransaction"]);
+			                $('#pbankRef').text(data["bankRef"]);
+		                    $('#printableRemittanceApplicationForm').print();
+		                    $('#popupRemittanceApplicationForm').modal("hide");
+		                    clearAndResetForm("frmRemittance");
+		                    location.reload();
+			            }
+		                else{
+							bootbox.alert("There is problem with saving remittance transaction.", function() {});
+			            }
+	                },
+		            error: function(jqXHR, textStatus, errorThrown){
+						bootbox.alert(jqXHR.status + ' : ' + textStatus + ', ' + jqXHR.statusText, function() {});
+		            }
+		        });
+		    });
+			
+			$( "#txtAmount" ).keyup(function() {
+				computeUsdEquivalent();
+				computeTotalAmount();
+			});
+			
+			$( "#txtExchangeRate" ).keyup(function() {
+				computeUsdEquivalent();
+				computeTotalAmount();
+			});
+			
+			$( "#txtFee" ).keyup(function() {
+				computeTotalAmount();
+			});
+			
+			$( "#txtCable" ).keyup(function() {
+				computeTotalAmount();
+			});
+			
+			$( "#txtPostage" ).keyup(function() {
+				computeUsdEquivalent();
+				computeTotalAmount();
+			});
+			
+			$( "#txtOther" ).keyup(function() {
+				computeUsdEquivalent();
+				computeTotalAmount();
+			});
+		
+			$("#btnCancelSaveAndPrint").click(function() {
+				$('#popupRemittanceApplicationForm').modal("hide");
+			});
+			
+		}); /* end document ready */
+
+	</script>
+
+}

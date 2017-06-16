@@ -1,0 +1,795 @@
+@import com.fasterxml.jackson.databind.JsonNode
+
+@(user: User, listCurrencies: List[CurrencyExchange], strTypeSender:String, nav: String, blockedRemittanceTransactions: List[SenderReceiverTransaction], rejectedAndApprovedTxs: List[SenderReceiverTransaction], continuingTransactionId: String, notificationInterval: String)
+
+@main("REMITTANCE", user, nav, blockedRemittanceTransactions, rejectedAndApprovedTxs, notificationInterval, listCurrencies) {
+	<!-- JS dataTables -->
+	<script type="text/javascript" language="javascript" src="@routes.Assets.at("plugins/datatables-1.10.2/media/js/jquery.js")"></script>
+	<script type="text/javascript" language="javascript" src="@routes.Assets.at("plugins/datatables-1.10.2/media/js/jquery.dataTables.min.js")"></script>
+	<script type="text/javascript" language="javascript" src="@routes.Assets.at("plugins/datatables-1.10.2/fnReloadAjax.js")"></script>
+	<!-- JS Bootstrap -->		
+	<script type="text/javascript" src="@routes.Assets.at("bootstrap/js/bootstrap.min.js")" defer></script>
+	<script type="text/javascript" src="@routes.Assets.at("plugins/jquery.numeric.min.js")"></script>
+	<script type="text/javascript" src="@routes.Assets.at("plugins/bootbox.min.js")"></script>
+	<!-- JS Print -->
+	<script type="text/javascript" src="@routes.Assets.at("plugins/jquery.print.js")"></script>
+	
+	<!-- easyUi -->
+	@if(user.getRole().getCode()=="role_teller"){
+	<script type="text/javascript" src="@routes.Assets.at("plugins/easyui/jquery.easyui.min.js")"></script>
+	<link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("plugins/easyui/themes/bootstrap/easyui.css")"/>
+	}
+	<!-- end easyUi -->
+	
+	<div class="content-wrapper">
+		<div class="page-header"><h3>List remittance </h3></div>
+		<div class="row">
+			<input type="hidden" name="hidListTypeSender" value="@strTypeSender"/>
+	        <div class="col-md-12">
+	          	<table id="tbRemittance" class="display cell-border compact" cellspacing="0" width="100%">
+					<thead>
+						<tr>
+							<th>N&deg;</th>
+							<th width="25px">ID</th>
+							<th width="200px">Sender</th>
+							<th width="190px">Receiver</th>
+							<th width="70px">Sent Date</th>
+							<th width="100px">Bank/Swift Code</th>
+							<th width="70px">Amount</th>
+							<th width="60px">Currency</th>
+							<th width="60px">Exc. Rate</th>
+							<th width="70px">USD Equi.</th>
+							<th width="50px">Fee</th>
+							<th width="50px">Cable</th>	
+						</tr>
+					</thead>
+					<tfoot></tfoot>
+					<tbody></tbody>
+				</table>
+	        </div>
+        </div>
+	</div>
+
+	<!-- modal remittance -->
+	
+		<!-- end pop up create or update user -->
+		
+	    <!-- pop up receiver advanced search view -->
+		<div id="modalAdvancedSearch" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalAdvancedSearch" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+		<div class="modal-dialog">
+			   <div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+					<h4 class="modal-title" id="popupAddEditReceiverTitle">Advanced Search</h4>
+				</div>
+				<form role="form" id="frmAdvancedSearch" name="frmAdvancedSearch" data-toggle="validator">
+					<div class="modal-body">
+						<div class="row">
+							<div class="col-md-6 form-group">
+								<label class="control-label">From</label>
+								<div class="input-group">
+								<input type="text" name="searchFromDate" id="advFromDate" class="form-control" placeholder="dd/mm/yyyy"/>
+								<span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+								</div>
+							</div>
+							<div class="col-md-6 form-group">
+								<label class="control-label">To</label>
+								<div class="input-group">
+								<input type="text" name="searchToDate" id="advToDate" class="form-control" placeholder="dd/mm/yyyy"/>
+								<span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-6">
+								<label>Sender Name</label>
+								<input type="text" name="advSenderFullName" class="form-control" placeholder="any..."/>
+							</div>
+							<div class="col-md-6">
+								<label>Sender Account No.</label>
+								<input type="text" name="advSenderAccountNo" class="form-control" placeholder="any..."/>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-6">
+								<label>Sender ID/Passport No.</label>
+								<input type="text" name="advSenderIdentityNo" class="form-control" placeholder="any..."/>
+							</div>					
+						</div>
+						<div class="row">
+							<div class="col-md-6">
+								<label>Intermediary Bank</label>
+								<input type="text" name="advIntermediaryBank" class="form-control" placeholder="any..."/>
+							</div>
+							<div class="col-md-6">
+								<label>Swift Code</label>
+								<input type="text" name="advSwiftCode" class="form-control" placeholder="any..."/>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-6">
+								<label>Receiver Account No.</label>
+								<input type="text" name="advReceiverAccountNo" class="form-control" placeholder="any..."/>
+							</div>
+							<div class="col-md-6">
+								<label>Receiver Name</label>
+								<input type="text" name="advReceiverFullName" class="form-control" placeholder="any..."/>
+							</div>
+						</div>												
+					</div>
+					<div class="modal-footer">
+						<button id="btnAdvancedSearchRemittance" type="submit" class="btn btn-primary">Search</button>
+						<button id="btnCancelAdvanceSearch" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	<!-- end pop up sender advanced search view -->
+	
+	<script type="text/javascript" language="javascript">
+		var colNo = 0;
+		var colId = 1;
+		var colSender = 2;
+		var colReceiver = 3;
+		var colSentDate = 4;
+		var colSwiftCode = 5;
+		var colAmount = 6;
+		var colCurrency = 7;
+		var colExchangeRate = 8;
+		var colUSDEqivalent = 9;
+		var colFee = 10;
+		var colCable = 11;
+		
+		var oTable;
+		
+		$(document).ready(function() {
+			/* date picker start date */
+			var dpsearchFromDate = new dhtmlXCalendarObject(["advFromDate"]);
+			dpsearchFromDate.setDateFormat("%d/%m/%Y");
+			$("input[name=searchFromDate]").val(dpsearchFromDate.getFormatedDate("%d/%m/%Y", new Date()));
+			
+			/* date picker end date */
+			var dpsearchToDate = new dhtmlXCalendarObject(["advToDate"]);
+			dpsearchToDate.setDateFormat("%d/%m/%Y");
+			$("input[name=searchToDate]").val(dpsearchToDate.getFormatedDate("%d/%m/%Y", new Date()));
+			
+			/* date picker end date */
+			var dpDateTransaction = new dhtmlXCalendarObject(["txtDateTransactoin"]);
+			dpDateTransaction.setDateFormat("%d/%m/%Y %H:%i");
+			
+			/* date picker end date */
+			var dpExpireDate = new dhtmlXCalendarObject(["txtExpireDate"]);
+			dpExpireDate.setDateFormat("%d/%m/%Y");
+			
+			var dpDOB = new dhtmlXCalendarObject(["txtDOB"]);
+			dpDOB.setDateFormat("%d/%m/%Y");
+			
+			$('[name="txtOther"]').numeric();
+			$('[name="txtAmount"]').numeric();
+			$('[name="txtExchangeRate"]').numeric();
+			$('[name="txtExchangeRate"]').numeric();
+			$('[name="txtFee"]').numeric();
+			
+			 oTable = $('#tbRemittance').dataTable( {
+			    "oLanguage": {
+				    "sSearch": " "
+				},
+				"columnDefs": [ 
+					{"targets":[colNo], "sortable":false, "searchable":false},
+					{"targets":[colId], "visible":false, "searchable":false}
+				],
+				"bProcessing": true,
+				"bServerSide": true,	  
+				"sAjaxSource": "@routes.RemittanceController.getRemittanceList()",
+				"bAutoWidth": false,
+				//"dom": 'fl<"toolbar">t<"search">ip',
+				"dom": 'fl<"toolbar">t<"advanceSearch">ip',
+				"bPaginate": true,
+				"bFilter": true,
+				"bInfo": true,
+				"bLengthChange": true,
+				//"sScrollY": "900px",
+				//"sDom": 'T<"clear">frtiS',
+				"fnServerParams": function ( aoData ) {
+					var searchContainer = $("#frmAdvancedSearch");
+					searchContainer.find('input[type="text"][value!=""],input[type="radio"]:checked,input[type="checkbox"]:checked,textarea[value!=""],select[value!=""]').each(function () {
+		                // all textboxes, radio buttons, checkboxes, textareas, and selects that actually have a value associated with them
+		                var element = $(this), value = element.val();
+		                if (typeof value === "string") {
+		                	aoData.push({ "name": element.attr("name"), "value": value });
+		                }
+		                else if (Object.prototype.toString.apply(value) === '[object Array]') {
+		                    // multi select since it has an array of selected values
+		                    var i;
+		                    for (i = 0; i < value.length; i++) {
+		                    	aoData.push({ "name": element.attr("name"), "value": value[i] });
+		                    }
+		                }
+		            });
+			    },
+			    fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+					$('td', nRow).on('dblclick', function() { 
+						var requestUrl = '@routes.RemittanceController.getById()' + "?transactionId=" + aData[colId];
+						showModalRemittance(requestUrl, "@user.getRole().getCode()");
+					});
+				}
+			} );
+
+			@if(continuingTransactionId != null){
+				var requestUrl = '@routes.RemittanceController.getById()' + "?transactionId=@continuingTransactionId";
+				showModalRemittance(requestUrl, "@user.getRole().getCode()");
+			}
+
+
+			@if(user.getRole().getCode()=="role_teller"){
+				$("div.toolbar").html('&nbsp;<a id="btnAddRemittantTransaction" class="btn btn-primary">Add</a>');
+			}
+			$('div.dataTables_filter label').append('&nbsp;<a id="btnClearSearch" href="#" class="btn btn-primary">Clear Search</a>');
+			$('div.dataTables_filter label').append('&nbsp;<a data-toggle="modal" class="btn btn-primary" id="btnAdvanceSearchRemittance">Advanced Search</a>');
+			
+			/* Validate form advanced search remittance and submit */
+		    $('#frmAdvancedSearch').bootstrapValidator({
+		    	container: 'tooltip',
+		    	excluded: [':disabled', ':hidden', ':not(:visible)'],
+		    	live: 'enabled',
+		        feedbackIcons: {
+		            valid: 'glyphicon',
+		            invalid: 'glyphicon',
+		            validating: 'glyphicon glyphicon-refresh'
+		        },
+		        fields:{
+		        	searchFromDate:{
+						validators:{
+							date: {
+								format: 'DD/MM/YYYY',
+								message: 'Invalid date'
+							}
+						}
+					},
+					searchToDate:{
+						validators:{
+							date: {
+								format: 'DD/MM/YYYY',
+								message: 'Invalid date'
+							}
+						}
+					}					
+			    }
+		    })	        
+			.on('success.form.bv', function(e) {
+				e.preventDefault();
+				oTable.fnReloadAjax();
+				$('#modalAdvancedSearch').modal("hide");				
+			});	    
+	        
+	        $searchContainerInputs = $('#frmAdvancedSearch').find('input[type="text"],input[type="radio"],input[type="checkbox"],select,textarea');
+	        
+	        $('#btnAdvanceSearchRemittance').click(function(){
+				$('#modalAdvancedSearch').modal("show");
+				$('#frmAdvancedSearch').data('bootstrapValidator').resetForm();
+			});
+	        
+	        $("#btnClearSearch").click(function () {
+	        	$searchContainerInputs.each(function () {
+	                var $input = $(this),
+	                tagName = this.tagName.toLowerCase();
+	                if (tagName === "input") {
+	                    var type = $input.attr("type").toLowerCase();
+	                    if (type === "checkbox"
+	                    || type === "radio") {
+	                        $input.removeAttr("checked");
+	                    }
+	                    else if (type === "text") {
+	                        $input.val("");
+	                    }
+	                }
+	                else if (tagName === "select") {
+	                    if ($input.attr("multiple") !== undefined) {
+	                        $input.val([]);
+	                    }
+	                    else {
+	                        $input.val("");
+	                    }
+	                }
+	                else if (tagName === "textarea") {
+	                    $input.val("");
+	                }
+	            });
+	        	$("input[name=searchFromDate]").val(dpsearchFromDate.getFormatedDate("%d/%m/%Y", new Date()));
+				$("input[name=searchToDate]").val(dpsearchToDate.getFormatedDate("%d/%m/%Y", new Date()));
+	            oTable.fnReloadAjax();
+	        });
+			
+			if(document.getElementById("tbRemittance_filter") != null) {
+				//$("#tbRemittance_filter").hide();
+				var searchFilter = $('#tbRemittance_filter').find('input[type="search"]');
+				searchFilter.each(function () {
+					var $input = $(this);
+					$input.hide();
+				});
+			}
+			
+			enableDisableControlById=function(objectId) {
+				var recieverArea = $('#' + objectId).find('input[type="text"]');
+				recieverArea.each(function () {
+					var $input = $(this),
+					tagName = this.tagName.toLowerCase();
+					if (tagName === "input") {
+						var type = $input.attr("type").toLowerCase();
+						if (type === "text") {
+							$input.removeAttr('disabled');
+						}
+					}
+				});
+			}
+			
+			$popupAddRemittantContainerInputs = $('#popupAddUpdateRemittant').find('input[type="text"],input[type="hidden"],input[type="radio"],input[type="checkbox"],select,textarea');
+			
+			$('#modalAdvancedSearch').on('hide.bs.modal', function() {
+				//$('#frmAdvancedSearch').bootstrapValidator('resetForm', true);
+			});
+			
+			// Reset the Tooltip container form
+		    $('#resetButton').on('click', function(e) {
+		    	clearAndResetForm("frmAddUpdateRemittant");
+		    });
+			
+			$('#resetOnClose').on('click', function(e) {
+				clearAndResetForm("frmAddUpdateRemittant");
+		    });
+			
+			$('#frmAddUpdateRemittant').bootstrapValidator({
+				container: 'tooltip',
+		        message: 'This value is not valid',
+		        feedbackIcons: {
+		            valid: 'glyphicon',
+		            invalid: 'glyphicon',
+		            validating: 'glyphicon'
+		        },
+		        fields: {
+		        	'txtFullName': {
+		                validators: {
+		                	notEmpty: { message: 'Please enter required information.' }
+		                }
+		            },
+			        'txtAccNumber': {
+			            validators: {
+			            	notEmpty: { message: 'Please enter required information.' }
+			            }
+			        },
+					'txtInterBank': {
+		                validators: {
+		                	notEmpty: { message: 'Please enter required information.' }
+		                }
+		            },
+					'txtSwiftCode': {
+		                validators: {
+		                	notEmpty: { message: 'Please enter required information.' }
+		                }
+		            },
+		            'txtRcAccNumber': {
+		                validators: {
+		                	notEmpty: { message: 'Please enter required information.' }
+		                }
+		            },
+					'txtRcFullName': {
+		                validators: {
+		                	notEmpty: { message: 'Please enter required information.' }
+		                }
+		            },
+					/*'txtRcPurpose': {
+		                validators: {
+		                	notEmpty: { message: 'Please enter required information.' }
+		                }
+		            },*/
+<!--		            'txtBankRef': {-->
+<!--			            validators: {-->
+<!--			            	notEmpty: { message: 'Please enter required information.' }-->
+<!--			            }-->
+<!--			        },-->
+<!--					'txtDateTransactoin': {-->
+<!--			            validators: {-->
+<!--			            	notEmpty: { message: 'Please enter required information.' }-->
+<!--			            }-->
+<!--			        },-->
+			        'txtAmount': {
+		                validators: {
+		                	notEmpty: { message: 'Please enter required information.' }
+		                }
+		            },
+		            'txtFee': {
+		                validators: {
+		                	notEmpty: { message: 'Please enter required information.' }
+		                }
+		            }
+		        }
+		    })
+		    .on('success.form.bv', function(e) {
+	            // Prevent form submission
+	            e.preventDefault();       
+	            $("input[name=hidSenderId]").val(senderId);
+	            $("input[name=hidRecieverId]").val(receiverId);
+	            $('#hidRcFullName').val($("#txtRcFullName").combo('getText'));
+	            var $form = $(e.target);// Get the form instance
+	            var data = {};
+	            $form.find('[name]').each(function(index, value){
+					var that = $(this),
+						name = that.attr('name'),
+						value = that.val();
+					if(that.attr('type') != null && that.attr('type')=='checkbox'){
+						data[name] = that.prop('checked');
+					}else{
+						data[name] = value;
+					}
+				});
+	            
+	            // Use Ajax to submit form data 
+	            $.ajax({
+	       			url: "@routes.RemittanceController.previewRemittanceTransaction()",
+	       			type: "post",
+	       			dataType: 'json',
+	       			data: JSON.stringify(data),
+	       			contentType : "application/json",
+	       			success: function(response) {
+	       				if(response.result == 'block') {
+	       					$('#popupAddUpdateRemittant').modal("hide");
+	       					bootbox.alert(response.message, function() {
+	       						$('#popupAddUpdateRemittant').modal("show");
+	       					});
+	       				}
+	       				else if(response.result == 'warning'){	  
+	       					$('#popupAddUpdateRemittant').modal("hide");
+	       					bootbox.dialog({
+	       						message: response.message ,
+	       						title: "Warning",
+	       						buttons: {
+	       							success: {
+	       								label: "NO",
+	       								className: "btn-default",
+	       								callback: function() {
+	       									$('#frmAddUpdateRemittant').data('bootstrapValidator').resetForm();
+	       									$('#popupAddUpdateRemittant').modal("show");
+	       								}
+	       							},
+	       							main: {
+	       								label: "Yes",
+	       								className: "btn-primary",
+	       								callback: function() {
+	       									// Save transaction as blocking 
+	       									var actionurl = "@routes.RemittanceController.saveOrUpdateRemittanceTransaction()";
+	       							        //do your own request an handle the results
+	       							         $.ajax({
+	       							                url: actionurl,
+	       							                type: 'post',
+	       							                dataType: 'json',
+	       							                success: function(data) {
+	       							                    location.reload();
+	       							                }
+	       							           });
+	       								}
+	       							}
+	       						}
+	       					});
+				       	}
+	       				else if(response == 'failed'){	       					
+				       		$('#remittance-alert-danger').removeClass('hidden');
+			       			setTimeout(function(){
+			       				$('#remittance-alert-danger').addClass('hidden');
+			       			}, 3000);
+					    }
+	       				else{	       					
+	       					$('#popupAddUpdateRemittant').modal("hide");
+			       			updateRemittanceFormForPrint(response);
+			       			$('#popupRemittanceApplicationForm').modal("show");
+			       			$('#frmAddUpdateRemittant').data('bootstrapValidator').resetForm();
+			       		}
+		       		},
+		            error: function(jqXHR, textStatus, errorThrown){
+		            	bootbox.alert(jqXHR.status + ' : ' + textStatus + ', ' + jqXHR.statusText, function() {});
+		            }
+		       	});
+		    });
+			
+			
+			<!-- start suggestion combo work only with role teller -->
+			@if(user.getRole().getCode()=="role_teller"){
+				
+				$('#btnAddRemittantTransaction').click(function(){
+					$('#txtFullName').combogrid('grid').datagrid('loadData', {"total":0,"rows":[]});
+				    $('#txtRcFullName').combogrid('grid').datagrid('loadData', {"total":0,"rows":[]});
+				    $('#txtFullName').combogrid('clear');
+				    $('#txtRcFullName').combogrid('clear');
+				    $('#txtFullName').combo('clear');
+				    $('#txtRcFullName').combo('clear');
+					
+					$('#myModalLabel').html('Add Remittance');
+					$("#hidProcess").val("1");
+					senderId = 0;
+					receiverId = 0;
+					$('#frmAddUpdateRemittant').bootstrapValidator('resetForm', true) 
+					$.ajax({
+		       			url: "@routes.RemittanceController.getBankReference()",
+		       			type: "get",
+		       			dataType: 'json',
+		       			contentType : "application/json",
+		       			success: function(response) {
+		       				clearForm("frmAddUpdateRemittant");
+		       				$("input[name='hidBankRef']").val(response.bankRef);
+							$("input[name='txtDateTransactoin']").val(response.dateTransaction);
+							$('button[name="btnReject"]').hide();
+							$('button[name="btnApprove"]').hide();
+		       				$('#popupAddUpdateRemittant').modal("show");
+			       		},
+			            error: function(jqXHR, textStatus, errorThrown){
+			            	bootbox.alert(jqXHR.status + ' : ' + textStatus + ', ' + jqXHR.statusText, function() {});
+			            }
+			       	});
+				});
+				
+				
+				$(".notif-action-button").on("click", function(){
+					$('#popupAddUpdateRemittant').modal("hide");
+					bootbox.dialog({
+						message: "Do you want to cancel the transaction ?" ,
+						title: "Warning",
+						buttons: {
+							success: {
+								label: "NO",
+								className: "btn-default",
+								callback: function() {
+									//$('#popupAddUpdateRemittant').modal("show");
+								}
+							},
+							main: {
+								label: "Yes",
+								className: "btn-primary",
+								callback: function() {
+									var transactionId = $("#hidRemittanceId").val();
+									var status = "transaction_canceled";
+									$.ajax({
+						       			url: '@routes.RemittanceController.updateTransactionStatus()' + '?transactionId=' + transactionId + "&status=" + status,
+						       			type: 'post',
+						       			success: function(response) {
+						       				oTable.fnReloadAjax();
+							       		},
+							            error: function(jqXHR, textStatus, errorThrown){
+											bootbox.alert(jqXHR.statusText, function() {
+					       						$('#popupAddUpdateRemittant').modal("show");
+					       					});
+							            }
+							       	});
+								}
+							}
+						}
+					});
+				});
+				
+				$('#txtFullName').combogrid({
+	                panelWidth:500,
+	                name:'comboFullName',
+	                height: 28,
+	                width: 403,
+	                url: '@routes.SenderController.filterSenderByFullName()',
+	                idField:'id',
+	                textField:'fullName',
+	                fitColumns:true,
+	                loadMsg: 'Loading ...',
+	                method: 'get',
+	                mode:'remote',
+	                fitColumns:true,
+	                queryParams: {
+	                	minLength: '3'
+	            	},
+	                columns:[[
+	                    {field:'accountNo',title:'Account No',width:30},
+	                    {field:'fullName',title:'Full Name',width:40},
+	                    {field:'identityNumber',title:'Identity Number',width:30}
+	                ]],
+	                onSelect: function (rowIndex, rowData) {
+	                    var grid = $('#txtFullName').combogrid('grid');	// get datagrid object
+	                    var data = grid.datagrid('getSelected');	
+	                    senderId = data.id;
+			        	updateValueSenderPopup(data);
+						var urlRequest = '@routes.RemittanceController.getRecieverBySenderId()' + '?senderId=' + senderId;
+						$('#txtRcFullName').combogrid('grid').datagrid({
+							panelWidth:500,
+							url: urlRequest,
+			                idField:'id',
+			                textField:'fullName',
+			                fitColumns:true,
+			                loadMsg: 'Loading ...',
+			                method: 'get',
+			                mode:'remote',
+			                fitColumns:true,
+			                queryParams: {
+			                	minLength: '3'
+			            	},
+			                columns:[[
+			                    {field:'accountNo',title:'Account No',width:30},
+			                    {field:'fullName',title:'Full Name',width:40},
+			                    {field:'identityNumber',title:'Identity Number',width:30}
+			                ]]
+						});
+	                },
+	                onChange: function(newValue,oldValue){
+	                	if(newValue.length >= 3 && !isNumber(newValue)) {
+	                		$('#txtFullName').combogrid('grid').datagrid({
+	                			url: '@routes.SenderController.filterSenderByFullName()',
+	    		                idField:'id',
+	    		                textField:'fullName',
+	    		                fitColumns:true,
+	    		                loadMsg: 'Loading ...',
+	    		                method: 'get',
+	    		                mode:'remote',
+	    		                fitColumns:true,
+	    		                queryParams: {
+	    		                	minLength: '3'
+	    		            	},
+	    		            	columns:[[
+	    		                          {field:'accountNo',title:'Account No',width:30},
+	    		                          {field:'fullName',title:'Full Name',width:40},
+	    		                          {field:'identityNumber',title:'Identity Number',width:30}
+	    		                      ]]
+	    					});
+	                	}
+	                }
+	            });
+				
+				// ============= Reciever ===============
+				$( "#txtRcFullName" ).combogrid({
+					panelWidth:500,
+					height: 28,
+		            width: 403,
+	                url: '@routes.ReceiverController.filterByFullNameANDAccountNo()',
+	                idField:'id',
+	                textField:'fullName',
+	                fitColumns:true,
+	                loadMsg: 'Loading ...',
+	                method: 'get',
+	                mode:'remote',
+	                fitColumns:true,
+	                queryParams: {
+	                	minLength: '3'
+	            	},
+	                columns:[[
+	                    {field:'accountNo',title:'Account No',width:30},
+	                    {field:'fullName',title:'Full Name',width:40},
+	                    {field:'swiftCode',title:'Swift Code',width:30}
+	                ]],
+	                onSelect: function (rowIndex, rowData) {
+	                	 var grid = $('#txtRcFullName').combogrid('grid');	// get datagrid object
+	                     var data = grid.datagrid('getSelected');	
+	                     receiverId = data.id;
+	                     updateValueRecieverPopup(data);
+	                     
+	                     var urlRequest = '@routes.RemittanceController.getSenderByRecieverId()' + '?receiverId=' + receiverId;
+	 					$('#txtFullName').combogrid('grid').datagrid({
+	 						panelWidth:500,
+	 						url: urlRequest,
+	 		                idField:'id',
+	 		                textField:'fullName',
+	 		                fitColumns:true,
+	 		                loadMsg: 'Loading ...',
+	 		                method: 'get',
+	 		                mode:'remote',
+	 		                fitColumns:true,
+	 		                queryParams: {
+	 		                	minLength: '3'
+	 		            	},
+	 		            	columns:[[
+		                        {field:'accountNo',title:'Account No',width:30},
+		                        {field:'fullName',title:'Full Name',width:40},
+		                        {field:'identityNumber',title:'Identity Number',width:30}
+	 	                    ]]
+	 					});
+	                },
+	                onLoadSuccess: function(data){
+	                	if (data.rows.length){
+	    					$(this).combogrid('setValue',data.rows[0].id);
+	    				}
+	                },
+	                onChange: function(newValue,oldValue){
+	                	
+	                	var vSenderName = $('#txtFullName').combo('getText');
+	                	receiverId = 0;
+	                	if(newValue.length >= 3 && !isNumber(newValue)) {
+	                		$('#txtRcFullName').combogrid('grid').datagrid({
+	    						url: 'receiver/filterByFullNameANDAccountNo',
+	    		                idField:'id',
+	    		                textField:'fullName',
+	    		                fitColumns:true,
+	    		                loadMsg: 'Loading ...',
+	    		                method: 'get',
+	    		                mode:'remote',
+	    		                fitColumns:true,
+	    		                queryParams: {
+	    		                	minLength: '3'
+	    		            	},
+	    		                columns:[[
+	    		                    {field:'accountNo',title:'Account No',width:30},
+	    		                    {field:'fullName',title:'Full Name',width:40},
+	    		                    {field:'identityNumber',title:'Identity Number',width:30}
+	    		                ]]
+	    					});
+	                	}
+	                	$("#txtFullName").combo('setValue', vSenderName).combo('setText', vSenderName);
+	                }
+	                
+				});
+			}
+			<!-- end suggestion combo work only with role teller -->
+			
+			$( "#txtOther" ).keyup(function() {
+				var vOther = ($( "#txtOther" ).val() != "") ? parseInt($( "#txtOther" ).val()) : 0;
+				if(vOther == 0) {
+					$("#txtCharge").val("SHA");
+					$("#divCharge").text("SHA");
+				}
+				else if(vOther >= 8) {
+					$("#txtCharge").val("OUR");
+					$("#divCharge").text("OUR");
+				} else {
+					$("#txtCharge").val("");
+					$("#divCharge").text("");
+				}
+			});
+			
+			$( "#txtFee" ).change(function() {
+				var vFee = ($( "#txtFee" ).val() != "") ? $( "#txtFee" ).val() : 0;
+				if(vFee < 15) {
+					bootbox.alert("Fee must be greater than 15.", function() {});
+				}
+			});
+			
+			$("#frmRemittanceApplication").submit(function(e) {
+		        e.preventDefault();
+		        $.ajax({
+	                url: '@routes.RemittanceController.saveOrUpdateRemittanceTransaction()',
+	                type: 'post',
+	                dataType: 'json',
+	                success: function(response) {
+		                if(response == 'success'){
+		                    $('#popupAddUpdateRemittant').modal("hide");
+		                    $('#printableRemittanceApplicationForm').print();
+		                    $('#popupRemittanceApplicationForm').modal("hide");
+		                    location.reload();
+			            }
+		                else{
+							bootbox.alert("There is problem with saving remittance transaction.", function() {});
+			            }
+	                }
+		        });
+		    });
+			
+			$( "#txtAmount" ).keyup(function() {
+				computeUsdEquivalent();
+				computeTotalAmount();
+			});
+			
+			$( "#txtExchangeRate" ).keyup(function() {
+				computeUsdEquivalent();
+				computeTotalAmount();
+			});
+			
+			$( "#txtFee" ).keyup(function() {
+				computeTotalAmount();
+			});
+			
+			$( "#txtCable" ).keyup(function() {
+				computeTotalAmount();
+			});
+		
+			$("#btnCancelSaveAndPrint").click(function() {
+				//$('#popupRemittanceApplicationForm').modal("hide");
+				$('#popupAddUpdateRemittant').modal("show");
+			});
+			
+			
+		}); /* end document ready */
+		
+		
+		
+	</script>
+
+}

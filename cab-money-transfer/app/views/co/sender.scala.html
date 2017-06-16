@@ -1,0 +1,734 @@
+@(user: User, nav: String, blockedRemittanceTransactions: List[SenderReceiverTransaction], notificationInterval: String, listCurrencies: List[CurrencyExchange])
+
+@import utils.DateUtils
+
+@main("SENDER", user, nav, blockedRemittanceTransactions, null, notificationInterval, listCurrencies) {
+
+	<div class="content-wrapper">
+		<div class="page-header"><h3>List sender</h3></div>
+		<table id="tbSender" class="display cell-border compact" cellspacing="0" width="100%">
+			<thead>
+				<tr>
+					<th width="25px">N&deg;</th>
+					<th>ID</th>
+					<th width="50px">Type</th>
+					<th width="120px">Account No</th>
+					<th width="180px">Full name</th>
+					<th width="180px">Company name</th>
+					<th>Address & Tel No.</th>
+					<th width="70px">DOB</th>
+					<th width="70px">ID/Passport</th>
+					<th width="70px">Expired Date</th>
+					<th width="70px">Email</th>
+					<th width="40px">Blacklist</th>
+				</tr>
+			</thead>
+			<tbody></tbody>
+		</table>
+	</div>
+
+	<!-- pop up create or update sender -->
+	<div id="popupAddEditSender" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="popupAddEditSender" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+					<h4 class="modal-title" id="popupAddEditSenderTitle">Create Sender</h4>
+				</div>
+				<form role="form" id="frmSender" data-toggle="validator" action="@routes.SenderController.saveOrUpdateSender()" method="post">
+					<div class="modal-body">
+						<input type="hidden" name="senderId" id="senderId" value="0"/>
+						<div id="sender-alert-success" class="alert alert-success hidden" role="alert" alert-dismissable><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Saved successfully</div>
+						<div id="sender-alert-warning" class="alert alert-warning hidden" role="alert" alert-dismissable><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Sender exists</div>
+						<div id="sender-alert-danger" class="alert alert-danger hidden" role="alert" alert-dismissable><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>JSON expected</div>
+						<div class="row"> <!-- Row 1 -->
+							<div class="col-md-6">
+								<label>Type</label>
+								<select class="form-control" name="senderType">
+									<option value="TO721">TO721</option>
+									<option value="VI731">VI731</option>
+									<option value="CH741">CH741</option>
+									<option value="WI888">WI888</option>
+									<option value="Other">Other</option>
+								</select>
+							</div>
+							<div class="col-md-6 form-group">
+								<label class="control-label">Account No.</label>
+								<input type="text" name="senderAccountNo" class="form-control" placeholder="account no."/>
+							</div>
+						</div>
+						<div class="row"> <!-- Row 2 -->
+							<div class="col-md-6 form-group">
+								<label class="control-label">Full name</label>
+								<input type="text" name="senderFullName" class="form-control" placeholder="full name"/>
+							</div>
+							<div class="col-md-6 form-group">
+								<label class="control-label">Company name</label>
+								<input type="text" name="senderCompanyName" class="form-control" placeholder="company name"/>
+							</div>
+						</div>
+						<div class="row"> <!-- Row 3 -->
+							<div class="col-md-6 form-group">
+								<label class="control-label">Date of birth (15 < Age < 70)</label>
+				                <div class="input-group">
+				                    <input type="text" name="senderDateOfBirth" id="senderDateOfBirth" class="form-control" placeholder="dd/mm/yyyy"/>
+				                    <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+				                </div>
+							</div>	
+							<div class="col-md-6 form-group">
+								<label class="control-label">Email</label>
+								<input type="email" name="senderEmail" class="form-control" placeholder="email"/>
+							</div>						
+						</div>
+						<div class="row"> <!-- Row 4 -->
+							<div class="col-md-12 form-group">
+								<label class="control-label">Address & Tel No.</label>
+								<textarea name="senderAddress" class="form-control" rows="2" placeholder="address & tel no." maxLength="255"></textarea>	
+							</div>		
+						</div>
+<!-- 						<div class="row"> Row 5 -->
+<!-- 							<div class="col-md-12 form-group"> -->
+<!-- 								<label class="control-label">Reason</label> -->
+<!-- 								<textarea name="senderReason" class="form-control" rows="2" placeholder="reason" maxLength="255"></textarea>	 -->
+<!-- 							</div>		 -->
+<!-- 						</div> -->
+						<div class="row"> <!-- Row 6 -->
+							<div class="col-md-6 form-group">
+								<label class="control-label">ID/Passport No.</label>
+								<input type="text" name="senderIdentityNo" class="form-control" placeholder="identity number"/>
+							</div>	
+							<div class="col-md-6 form-group">
+								<label class="control-label">Expire date</label>
+				                <div class="input-group">
+				                    <input type="text" name="senderExpireDate" id="senderExpireDate" class="form-control" placeholder="dd/mm/yyyy"/>
+				                    <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+				                </div>
+							</div>		
+						</div>
+						<div class="row"> <!-- Row 7 -->
+							<div class="col-md-6">
+								<div class="row">
+									<div class="col-xs-12">
+										<label>Blacklist</label>
+										<input type="checkbox" name="senderBlacklist" class="form-control pull-right" data-on-text="YES" data-off-text="NO" data-on-color="danger"/>
+									</div>
+								</div>
+							</div>
+						</div>						
+					</div>
+					<div class="modal-footer">
+						<button id="btnSaveSender" type="submit" class="btn btn-primary">Save</button>
+						<button id="btnCancel" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	<!-- end pop up create or update sender -->
+
+	<!-- pop up sender advanced search view -->
+	<div id="popupAdvancedSearchSender" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="popupAdvancedSearchSender" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+					<h4 class="modal-title" id="popupAddEditSenderTitle">Advanced Search</h4>
+				</div>
+				<form role="form" id="frmAdvancedSearchSender" name="frmAdvancedSearchSender">
+					<div class="modal-body">
+						<div id="search-alert-warning" class="alert alert-warning hidden" role="alert" alert-dismissable><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Sender exists</div>
+						<div id="search-alert-danger" class="alert alert-danger hidden" role="alert" alert-dismissable><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>JSON expected</div>
+
+						<div class="row"> <!-- Row 1 -->
+							<div class="col-md-6">
+								<label>Type</label>
+								<select class="form-control" name="searchType" placeholder="any...">
+									<option value=""></option>
+									<option value="TO721">TO721</option>
+									<option value="VI731">VI731</option>
+									<option value="CH741">CH741</option>
+									<option value="WI888">WI888</option>
+									<option value="Other">Other</option>
+								</select>
+							</div>
+							<div class="col-md-6">
+								<label>Account No.</label>
+								<input type="text" name="searchAccountNo" class="form-control" placeholder="any..."/>
+							</div>
+						</div>
+						<div class="row"> <!-- Row 2 -->
+							<div class="col-md-6">
+								<label>Full name</label>
+								<input type="text" name="searchFullName" class="form-control" placeholder="any..."/>
+							</div>
+							<div class="col-md-6">
+								<label>Company name</label>
+								<input type="text" name="searchCompanyName" class="form-control" placeholder="any..."/>
+							</div>
+						</div>
+						<div class="row"> <!-- Row 3 -->	
+							<div class="col-md-6">
+								<label>Email</label>
+								<input type="email" name="searchEmail" class="form-control" placeholder="any..."/>
+							</div>
+							<div class="col-md-6">
+								<label>ID/Passport No</label>
+								<input type="text" name="searchIdentityNo" class="form-control" placeholder="any..."/>
+							</div>					
+						</div>	
+						<div class="row"> <!-- Row 4 -->
+							<div class="col-md-6">
+								<div class="row">
+									<div class="col-xs-12">
+										<label>Blacklist</label>
+										<input type="checkbox" name="searchBlacklist" class="form-control pull-right" data-on-text="YES" data-off-text="NO" data-on-color="danger"/>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button id="btnSearchSender" type="button" class="btn btn-primary">Search</button>
+						<button id="btnCancel" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	<!-- end pop up sender advanced search view -->
+	
+	<!-- jQuery -->
+	<script type="text/javascript" language="javascript" src="@routes.Assets.at("plugins/datatables-1.10.2/media/js/jquery.js")"></script>
+	<script type="text/javascript" language="javascript" src="@routes.Assets.at("plugins/datatables-1.10.2/media/js/jquery.dataTables.min.js")"></script>
+	<script type="text/javascript" language="javascript" src="@routes.Assets.at("plugins/datatables-1.10.2/fnReloadAjax.js")"></script>
+	<script type="text/javascript" language="javascript" src="@routes.Assets.at("plugins/datatables-1.10.2/fnFilterClear.js")"></script>
+	<!-- JS Bootstrap -->		
+	<script type="text/javascript" src="@routes.Assets.at("bootstrap/js/bootstrap.min.js")" defer></script>
+	<!-- JS Bootstrap Switch -->
+	<script type="text/javascript" src="@routes.Assets.at("bootstrap/js/bootstrap-switch.min.js")" defer></script>
+	
+	<script type="text/javascript" language="javascript">
+		var colNo = 0;
+		var colId = 1;
+		var colType = 2; 
+		var colAccountNo = 3;
+		var colFullName = 4; 
+		var colCompanyName = 5;
+		var colAddress = 6; 
+		var colDOB = 7;
+		var colIdentityNo = 8; 
+		var colExpiredDate = 9;
+		var colEmail = 10; 
+		var colBlacklist = 11; 
+		
+		var existAccountNo = false;
+		var existFullName = false;
+		var existCompanyName = false;
+		var existPhone = false;
+		var existIdentityNo = false;
+
+		$(document).ready(function() {
+			
+			var tbSender;
+			/*
+			* dataTables : tbSender
+			*/
+			tbSender = $('#tbSender').dataTable({
+				columnDefs: [ 
+					{targets:[colNo], sortable:false, searchable:false},
+					{targets:[colId], visible:false, searchable:false},
+					{targets:[colEmail], visible:false, searchable:false}
+				],
+				dom: 'l<"toolbar">rtip',
+				displayLength: 10,
+				pagingType: "full_numbers",
+				deferLoading: 0,
+	            serverSide: true,	
+	            processing: true,
+	            stateSave: true,
+	            ajaxSource: "@routes.SenderController.filterSender()",
+				fnServerParams: function (aoData) {
+					$frmSenderInputWithValue = $("#frmAdvancedSearchSender").find('input[type="text"][value!=""],input[type="email"][value!=""],input[type="radio"]:checked,input[type="checkbox"]:checked,textarea[value!=""],select[value!=""]');
+					$frmSenderInputWithValue.each(function () {
+		                var that = $(this), value = that.val();
+		                if (typeof value === "string") {
+		                	aoData.push({ "name": that.attr("name"), "value": value });
+		                }
+		                else if (Object.prototype.toString.apply(value) === '[object Array]') {
+		                    // for multi select because it has an array of selected values 
+		                    var i;
+		                    for (i = 0; i < value.length; i++) {
+		                    	aoData.push({ "name": that.attr("name"), "value": value[i] });
+		                    }
+		                }
+		          	});
+			    },	            
+				createdRow: function ( row, data, index ) {
+					if ( data[colBlacklist] == true) {
+						$(row).addClass('blacklist-row');
+					}
+<!--					else if(data[colBlock] == true){-->
+<!--						$(row).addClass('block-row');-->
+<!--					}-->
+				},
+				fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+					$('td', nRow).on('dblclick', function() { 
+						preparePopupBeforeEditSender(aData);
+						$('#popupAddEditSender').modal("show");
+					});
+				}
+			});
+			
+			$("div.toolbar").append('&nbsp;<a id="btnAddSender" class="btn btn-primary">Add</a>');
+			$("div.toolbar").append('<a data-toggle="modal" class="btn btn-primary pull-right col-margin-right" data-target="#popupAdvancedSearchSender">Advanced Search</a>');
+			$('div.toolbar').append('<a id="btnClearSearch" href="#" class="btn btn-primary pull-right col-margin-right">Clear Search</a>');
+
+			$('#popupAddUpdateRemittant .modal-header :input[type="text"]').attr('disabled', true);
+			$('#popupAddUpdateRemittant .modal-body :input').attr('disabled', true);
+			
+			/* date picker for date of birth */
+			var senderDateOfBirth = new dhtmlXCalendarObject(["senderDateOfBirth"]);
+			senderDateOfBirth.setDateFormat("%d/%m/%Y");
+			/* date picker for expire date */
+			var senderExpireDate = new dhtmlXCalendarObject(["senderExpireDate"]);
+			senderExpireDate.setDateFormat("%d/%m/%Y");
+
+<!--			$('[name="senderBlock"]').bootstrapSwitch();-->
+			$('[name="senderBlacklist"]').bootstrapSwitch();
+<!--			$('[name="searchBlock"]').bootstrapSwitch();-->
+			$('[name="searchBlacklist"]').bootstrapSwitch();
+
+			$('select[name="senderType"]').on('change', function(){
+				var selectedValue = $(this).val();
+				switch(selectedValue){
+					case 'TO721' : 
+						fillRandomAccountNumber('31221-721-');
+						break;
+					case 'VI731' : 
+						fillRandomAccountNumber('31221-731-');
+						break;
+					case 'CH741' : 
+						fillRandomAccountNumber('31221-741-');
+						break;					
+					case 'WI888' : 
+						fillRandomAccountNumber('31221-888-');
+						break;
+					case 'Other' : 
+						$('input[name="senderAccountNo"]').val('');
+						break;										
+				}
+			});
+
+			$('#popupAdvancedSearchSender').on('hide.bs.modal', function() {
+				clearSenderAdvancedSearchControls();
+			});
+
+			function clearSenderAdvancedSearchControls(){
+				$('select[name="searchType"]').val('');
+				$('input[name="searchAccountNo"]').val('');
+				$('input[name="searchFullName"]').val('');
+				$('input[name="searchCompanyName"]').val('');
+				$('input[name="searchEmail"]').val('');
+				$('input[name="searchPhone"]').val('');
+				$('input[name="searchIdentityNo"]').val('');
+<!--				$("input[name='searchBlock']").bootstrapSwitch('state', false);-->
+				$("input[name='searchBlacklist']").bootstrapSwitch('state', false);
+			}
+			
+			$("#btnClearSearch").click(function () {
+				//tbSender.fnFilterClear();
+				tbSender.fnReloadAjax("@routes.SenderController.filterSender()");
+	        });
+			
+			$("#btnSearchSender").click(function () {
+				tbSender.fnReloadAjax("@routes.SenderController.filterSender()" + "?" + $("#frmAdvancedSearchSender").serialize());
+				$('#popupAdvancedSearchSender').modal("hide");
+	        });
+
+			var countRecalculateRandom = 1;
+			function fillRandomAccountNumber(accountPrefix){
+				var random1 = getRandomArbitrary(100, 99999);
+				var random2 = getRandomArbitrary(1, 9);
+				var random = $.strPad(random1, 5) + '-' + random2;
+				var generatedAccountNo = accountPrefix + random;
+				$.ajax({
+	       			url: '@routes.SenderController.checkAccount()' + '?accountNo=' + generatedAccountNo,
+	       			type: 'get',
+	       			success: function(response) {
+	       				if(response == '1'){
+		       				if(countRecalculateRandom < 10){
+		       					fillRandomAccountNumber(accountPrefix);
+			       			}else{
+				       			bootbox.alert('Random Account No. still exists with 10 times recalculation!', function() {
+									return;
+					       		});
+				       		}
+	       					countRecalculateRandom++;
+				       	}else{
+				       		$('input[name="senderAccountNo"]').val(generatedAccountNo);
+					    }
+		       		},
+		            error: function(jqXHR, textStatus, errorThrown){
+		            	bootbox.alert(jqXHR.status + ' : ' + textStatus + ', ' + jqXHR.statusText, function() {});
+		            }
+		       	});				
+			}
+
+			function getRandomArbitrary(min, max) {
+				return Math.floor(Math.random() * (max - min)) + min;
+			}
+
+			$.strPad = function(input,length) {
+				var result = input.toString();
+				while (result.length < length) {
+					result = '0' + result;
+				}
+				return result;
+			};
+
+			/*
+			* on submit form advanced search sender
+			*/
+			$('form#frmAdvancedSearchSender').on('submit', function(e){
+				
+// 				var that = $(this);
+// 					url = that.attr('action'),
+// 					type = that.attr('method'),
+// 				advanceSearchData = {};
+// 				that.find('[name]').each(function(index, value){
+// 					var that = $(this),
+// 						name = that.attr('name'),
+// 						value = that.val();
+// 					if(that.attr('type') != null && that.attr('type')=='checkbox'){
+// 						advanceSearchData[name] = that.prop('checked');
+// 					}else{
+// 						advanceSearchData[name] = value;
+// 					}
+// 				});
+// 				data['updateTime'] = new Date().getTime();
+				e.preventDefault(); //STOP default action
+				
+				
+			    e.unbind(); //unbind. to stop multiple form submit
+				return false;
+				
+// 				$.ajax({
+// 	       			url: url,
+// 	       			type: type,
+// 	       			dataType: 'json',
+// 	       			data: JSON.stringify(data),
+// 	       			contentType : "application/json",
+// 	       			success: function(response) {
+// 	       				if(response == 'json_expected'){
+// 				       		$('#search-alert-danger').removeClass('hidden');
+// 			       			setTimeout(function(){
+// 			       				$('#search-alert-danger').addClass('hidden');
+// 			       			}, 3000);
+// 					    }
+// <!--					    else{-->
+// <!--				       		$('#popupAdvancedSearchSender').modal("hide");-->
+// <!--				       		location.reload();-->
+// <!--			       		}-->
+// 		       		},
+// 		            error: function(jqXHR, textStatus, errorThrown){
+// 			            bootbox.alert(jqXHR.status + ' : ' + textStatus + ', ' + jqXHR.statusText, function() {});
+// 		            }
+// 		       	});
+  
+	       				
+			});
+			/* end submit form advanced search sender */
+
+			function preparePopupBeforeEditSender(dr){
+				$('#popupAddEditSenderTitle').html('Edit Sender');
+				$('#btnSaveSender').html('Update');
+				$('#senderId').val(dr[colId]);
+				$("select[name='senderType']").val(dr[colType]);
+				$("input[name='senderAccountNo']").val(dr[colAccountNo]);
+				$("input[name='senderFullName']").val(dr[colFullName]);
+				$("input[name='senderCompanyName']").val(dr[colCompanyName]);
+				$("textarea[name='senderAddress']").val(dr[colAddress]);
+				$("input[name='senderDateOfBirth']").val(dr[colDOB]);
+				$("input[name='senderIdentityNo']").val(dr[colIdentityNo]);
+				$("input[name='senderExpireDate']").val(dr[colExpiredDate]);
+				$("input[name='senderEmail']").val(dr[colEmail]);
+				$("input[name='senderBlacklist']").bootstrapSwitch('state', (dr[colBlacklist] === true));
+
+				/* disable Sender Type if the sender is in remittance transaction */
+				$.ajax({
+	       			url: '@routes.SenderController.isInTransaction()' + '?senderId=' + $('#senderId').val(),
+	       			type: 'get',
+	       			success: function(response) {
+						if(response == '1'){ // the sender is in transaction, so don't allow user to change type 
+							$('select[name="senderType"]').prop("disabled", true);
+						}else{
+							$('select[name="senderType"]').prop("disabled", false);
+						}
+		       		},
+		            error: function(jqXHR, textStatus, errorThrown){
+		            	bootbox.alert(jqXHR.status + ' : ' + textStatus + ', ' + jqXHR.statusText, function() {});
+		            }
+		       	});				
+			}
+			
+			$('#btnAddSender').click(function(){
+				preparePopupBeforeAddSender();
+				$('#popupAddEditSender').modal("show");
+			});
+
+			function preparePopupBeforeAddSender(){
+				clearPopupControls();
+				$('#popupAddEditSenderTitle').html('Create Sender');
+				$('#btnSaveSender').html('Save');
+			}
+
+			function clearPopupControls(){
+				$('#frmSender').bootstrapValidator('resetForm', true);
+				$('#senderId').val('0');
+				$("select[name='senderType']").val('Other');
+				$("input[name='senderBlacklist']").bootstrapSwitch('state', false);
+			}
+			
+			$('#popupAddEditSender').on('hide.bs.modal', function () {
+				$('#frmSender').bootstrapValidator('resetForm', true);
+				$('select[name="senderType"]').prop("disabled", false);
+			});
+			senderDateOfBirth.attachEvent("onClick", function(date){
+				$('#frmSender').bootstrapValidator('revalidateField', 'senderFullName');
+				$('#frmSender').bootstrapValidator('revalidateField', 'senderDateOfBirth');
+				$('#frmSender').bootstrapValidator('revalidateField', 'senderIdentityNo');
+			});
+			$('input[name="senderIdentityNo"]').on('input',function(){
+				$('#frmSender').bootstrapValidator('revalidateField', 'senderDateOfBirth');
+				$('#frmSender').bootstrapValidator('revalidateField', 'senderIdentityNo');	
+				$('#frmSender').bootstrapValidator('revalidateField', 'senderExpireDate');			
+			});
+			senderExpireDate.attachEvent("onClick", function(date){
+				$('#frmSender').bootstrapValidator('revalidateField', 'senderIdentityNo');
+				$('#frmSender').bootstrapValidator('revalidateField', 'senderExpireDate');
+			});
+			$('input[name="senderFullName"]').on('input',function(){
+				$('#frmSender').bootstrapValidator('revalidateField', 'senderFullName');
+				$('#frmSender').bootstrapValidator('revalidateField', 'senderCompanyName');	
+			});
+			$('input[name="senderCompanyName"]').on('input',function(){
+				$('#frmSender').bootstrapValidator('revalidateField', 'senderFullName');
+				$('#frmSender').bootstrapValidator('revalidateField', 'senderCompanyName');	
+				$('#frmSender').bootstrapValidator('revalidateField', 'senderDateOfBirth');
+				$('#frmSender').bootstrapValidator('revalidateField', 'senderIdentityNo');
+			});
+		    /* Validate form Sender and submit */
+		    $('#frmSender').bootstrapValidator({
+		    	excluded: [':disabled', ':hidden', ':not(:visible)'],
+		    	live: 'enabled',
+		    	container: 'tooltip',
+		        feedbackIcons: {
+		            valid: 'glyphicon',
+		            invalid: 'glyphicon',
+		            validating: 'glyphicon glyphicon-refresh'
+		        },
+		        fields: {
+			        senderFullName: {
+			        	validators: {
+		        			callback: {
+		    					callback: function(value, validator, $field) {
+			    					var companyName = $('input[name="senderCompanyName"]').val();
+		    						if (value === '' && companyName === '' ) {
+		    							return {
+		    								valid: false,
+		    								message: 'Required when company name is empty.'
+		    							}
+		    						}else{
+			    						if(existFullName == true){
+			    							return {
+			    					            valid: false,
+			    					            message: 'Sender with this name and date of birth already exists'
+			    					        }
+					    				}else{
+											return true;
+						    			}
+			    					}
+		    					}		        				
+		        			}
+			        	}
+				    },
+			        senderCompanyName: {
+			        	validators: {
+		        			callback: {
+		    					callback: function(value, validator, $field) {
+			    					var fullName = $('input[name="senderFullName"]').val();
+		    						if (value === '' && fullName === '' ) {
+		    					        return {
+		    					            valid: false,
+		    					            message: 'Required when full name is empty.'
+		    					        }
+		    						}else{
+			    						if(existCompanyName == true){
+			    							return {
+			    					            valid: false,
+			    					            message: 'Sender as this company already exists'
+			    					        }
+					    				}else{
+											return true;
+						    			}
+			    					}
+		    					}		        				
+		        			}
+			        	}
+				    },
+		        	senderDateOfBirth: {
+		        		validators: {
+		        			callback: {
+		        				message: 'Required when ID/Passport No is empty.',
+		    					callback: function(value, validator, $field) {
+			    					var IDOrPassport = $('input[name="senderIdentityNo"]').val();
+			    					var companyName = $('input[name="senderCompanyName"]').val();
+		    						if (value === '' && IDOrPassport === '' && companyName === '') {
+		    							return false;
+		    						}else{
+										return true;
+			    					}
+		    					}		        				
+		        			},
+		        			date: {
+		        				format: 'DD/MM/YYYY',
+		        				message: 'Invalid date'
+		        			}		        			
+		        		}
+			        },
+			        senderIdentityNo: {
+		        		validators: {
+		        			callback: {
+		    					callback: function(value, validator, $field) {
+			    					var dateOfBirth = $('input[name="senderDateOfBirth"]').val();
+			    					var companyName = $('input[name="senderCompanyName"]').val();
+		    						if (value === '' && dateOfBirth === '' && companyName === '') {
+		    							return {
+		    								valid: false,
+		    								message: 'Required when Date of Birth is empty.'
+		    							}
+		    						}else{
+			    						if(existIdentityNo == true){
+			    							return {
+			    					            valid: false,
+			    					            message: 'Sender with this ID/Passport No. already exists'
+			    					        }
+					    				}else{
+											return true;
+						    			}
+			    					}
+		    					}		        				
+		        			}
+		        		}
+			        },
+			        senderExpireDate: {
+		        		validators: {
+		        			callback: {
+		        				message: 'Please specify the expired date for the ID/Passport no.',
+		    					callback: function(value, validator, $field) {
+			    					var IDOrPassport = $('input[name="senderIdentityNo"]').val();
+		    						if (value === '' && IDOrPassport != '' ) {
+		    							return false;
+		    						}else{
+										return true;
+			    					}
+		    					}		        				
+		        			},
+		        			date: {
+		        				format: 'DD/MM/YYYY',
+		        				message: 'Invalid date'
+		        			}		        			
+		        		}
+			        },
+			        senderAccountNo: {
+		        		validators: {
+		        			callback: {
+		    					callback: function(value, validator, $field) {
+		    						if(existAccountNo == true){
+		    							return {
+		    					            valid: false,
+		    					            message: 'Sender with this Account No. already exists'
+		    					        }
+				    				}else{
+										return true;
+					    			}
+		    					}		        				
+		        			}
+		        		}
+			        }
+			    }
+		    })
+		    .on('success.form.bv', function(e) {
+		    	e.preventDefault(); // Prevent submit form 
+				var that = $(this),
+				url = that.attr('action'),
+				type = that.attr('method'),
+				data = {};
+				that.find('[name]').each(function(index, value){
+					var that = $(this),
+						name = that.attr('name'),
+						value = that.val();
+					if(that.attr('type') != null && that.attr('type')=='checkbox'){
+						data[name] = that.prop('checked');
+					}else{
+						data[name] = value;
+					}
+				});
+				data['updateTime'] = new Date().getTime();
+				$.ajax({
+	       			url: url,
+	       			type: type,
+	       			dataType: 'json',
+	       			data: JSON.stringify(data),
+	       			contentType : "application/json",
+	       			success: function(response) {
+	       				if(response.indexOf("sender_exists") != -1){
+	       					$('#sender-alert-warning').removeClass('hidden');
+	       					$("#sender-alert-warning").slideDown("slow");
+	       					var existField = response.split("||")[1];
+	       					switch(existField){
+	       						case 'senderAccountNo' : 
+		       						existAccountNo = true;
+	       							$('#frmSender').bootstrapValidator('revalidateField', 'senderAccountNo'); 
+	       							existAccountNo = false; break;
+	       						case 'senderFullName' : 
+		       						existFullName = true;
+	       							$('#frmSender').bootstrapValidator('revalidateField', 'senderFullName'); 
+	       							existFullName = false; break;
+	       						case 'senderCompanyName' : 
+		       						existCompanyName = true;
+	       							$('#frmSender').bootstrapValidator('revalidateField', 'senderCompanyName'); 
+	       							existCompanyName = false; break;
+	       						case 'senderIdentityNo' : 
+		       						existIdentityNo = true;
+	       							$('#frmSender').bootstrapValidator('revalidateField', 'senderIdentityNo'); 
+	       							existIdentityNo = false; break;       							      								       							
+	       					}
+			       			window.setTimeout(function(){$("#sender-alert-warning").slideUp("slow");},3000);
+				       	}else if(response == 'json_expected'){
+				       		$('#sender-alert-danger').removeClass('hidden');
+			       			setTimeout(function(){
+			       				$('#sender-alert-danger').addClass('hidden');
+			       			}, 3000);
+					    }else{
+					    	tbSender.fnReloadAjax();
+			       			$('#sender-alert-success').removeClass('hidden');
+					    	$("#sender-alert-success").slideDown("slow");
+							window.setTimeout(function(){$("#sender-alert-success").slideUp("slow");},2000);
+							$('#frmSender').data('bootstrapValidator').resetForm();
+							$('#frmSender').find('input,textarea').val("");
+							$('select[name="senderType"]').val('Other');
+			       		}
+		       		},
+		            error: function(jqXHR, textStatus, errorThrown){
+		            	bootbox.alert(jqXHR.status + ' : ' + textStatus + ', ' + jqXHR.statusText, function() {});
+		            }
+		       	});
+	       		return false;
+		    });			
+		    
+		}); /* end document ready */
+
+	</script>
+
+}

@@ -1,0 +1,372 @@
+@(user: User, nav: String, blockingRemittanceTransactions: List[SenderReceiverTransaction], notificationInterval: String)
+@main("REPORT", user, nav, blockingRemittanceTransactions, null,notificationInterval, null) {
+
+	<div class="content-wrapper">
+		<div class="page-header"><h3>Remittance Report</h3></div>
+		<div class="row">
+	        <div class="col-md-12">
+	          	<table id="tbReport" class="display cell-border compact" cellspacing="0" width="100%">
+					<thead>
+						<tr>
+							<th>N&deg;</th>
+							<th>DATE</th>
+							<th>REF</th>
+							<th>CUSTOMER'S NAME</th>
+							<th>C.B Ref.</th>
+							
+							<th>ADD.</th>
+							<th>DOB.</th>
+							<th>ID/Passport No.</th>
+							<th>Expired Date</th>
+							
+							<th>AMOUNT OUTWARD</th>
+							<th>Currency</th>
+							<th>EX.</th>
+
+							<th>Fee</th>
+							<th>Cable</th>
+							<th>OUR</th>
+
+							<th>BENEFICIARY'S ACC</th>
+							<th>BENEFICIARY'S NAME</th>
+							<th>PURPOSE</th>
+						</tr>
+					</thead>
+					<tbody></tbody>
+				</table>
+	        </div>
+        </div>
+	</div>
+
+	<!-- modal report advanced search view -->
+	<div id="modalAdvancedSearch" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalAdvancedSearch" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+					<h4 class="modal-title" id="popupAddEditReceiverTitle">Advanced Search</h4>
+				</div>
+				<form role="form" id="frmAdvancedSearch" name="frmAdvancedSearch" data-toggle="validator">
+					<div class="modal-body">
+						<div class="row">
+							<div class="col-md-6 form-group">
+								<label class="control-label">From</label>
+								<div class="input-group">
+								<input type="text" name="searchFromDate" id="advFromDate" class="form-control" placeholder="dd/mm/yyyy"/>
+								<span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+								</div>
+							</div>
+							<div class="col-md-6 form-group">
+								<label class="control-label">To</label>
+								<div class="input-group">
+								<input type="text" name="searchToDate" id="advToDate" class="form-control" placeholder="dd/mm/yyyy"/>
+								<span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+								</div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-6">
+								<label>Sender Name</label>
+								<input type="text" name="advSenderFullName" class="form-control" placeholder="any..."/>
+							</div>
+							<div class="col-md-6">
+								<label>Sender Account No.</label>
+								<input type="text" name="advSenderAccountNo" class="form-control" placeholder="any..."/>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-6">
+								<label>Sender ID/Passport No.</label>
+								<input type="text" name="advSenderIdentityNo" class="form-control" placeholder="any..."/>
+							</div>					
+						</div>
+						<div class="row">
+							<div class="col-md-6">
+								<label>Intermediary Bank</label>
+								<input type="text" name="advIntermediaryBank" class="form-control" placeholder="any..."/>
+							</div>
+							<div class="col-md-6">
+								<label>Swift Code</label>
+								<input type="text" name="advSwiftCode" class="form-control" placeholder="any..."/>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-6">
+								<label>Receiver Account No.</label>
+								<input type="text" name="advReceiverAccountNo" class="form-control" placeholder="any..."/>
+							</div>
+							<div class="col-md-6">
+								<label>Receiver Name</label>
+								<input type="text" name="advReceiverFullName" class="form-control" placeholder="any..."/>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-12">
+									<br><label>Show columns</label><br>
+									<input type="checkbox" id="chkShowSenderAddress" name="showSenderAddress" value="showSenderAddress"><label for="chkShowSenderAddress" style="margin-right:40px;">&nbsp;Sender Address</label>
+									<input type="checkbox" id="chkShowSenderDOB" name="showSenderDOB" value="showSenderDOB"><label for="chkShowSenderDOB" style="margin-right:40px;">&nbsp;Sender DOB</label>
+									<input type="checkbox" id="chkShowSenderIdentityNo" name="showSenderIdentityNo" value="showSenderIdentityNo"><label for="chkShowSenderIdentityNo" style="margin-right:40px;">&nbsp;ID/Passport No.</label>
+									<input type="checkbox" id="chkShowExpiredDate" name="showSenderExpiredDate" value="showSenderExpiredDate"><label for="chkShowExpiredDate">&nbsp;Expired Date</label>
+							</div>
+						</div>																		
+					</div>
+					<div class="modal-footer">
+						<button id="btnAdvancedSearchReport" type="submit" class="btn btn-primary">Search</button>
+						<button id="btnCancel" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	<!-- end modal report advanced search view -->
+
+	<!-- modal report copy data view -->
+	<div id="modalReportCopyData" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalReportCopyData" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<form role="form">
+					<div class="modal-body">
+						<div class="row">
+							<div class="col-md-12">
+								<textarea id="txtCopyData" class="form-control" rows="17"></textarea>	
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button id="btnCancel" type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> Close</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	<!-- end modal report copy data view -->
+	
+	<!-- JS dataTables -->
+	<script type="text/javascript" language="javascript" src="@routes.Assets.at("plugins/datatables-1.10.2/media/js/jquery.js")"></script>
+	<script type="text/javascript" language="javascript" src="@routes.Assets.at("plugins/datatables-1.10.2/media/js/jquery.dataTables.min.js")"></script>
+	<script type="text/javascript" language="javascript" src="@routes.Assets.at("plugins/datatables-1.10.2/fnReloadAjax.js")" defer></script>
+	<script type="text/javascript" language="javascript" src="@routes.Assets.at("plugins/datatables-1.10.2/fnFilterClear.js")"></script>
+	<!-- JS Bootstrap -->		
+	<script type="text/javascript" src="@routes.Assets.at("bootstrap/js/bootstrap.min.js")" defer></script>
+	<script type="text/javascript" language="javascript">
+		var colNo = 0,
+			colDate = 1,
+			colBankRef = 2,
+			colSenderName = 3,
+			colSenderCBRef = 4, 
+			colSenderAddress = 5,
+			colSenderDOB = 6,
+			colSenderIdentityNo = 7,
+			colExpiredDate = 8,
+			colAmount = 9,
+			colCurrency = 10,
+			colExchange = 11,
+			colFee = 12,
+			colCable = 13,
+			colOur = 14,
+			colReceiverAccountNo = 15,
+			colReceiverFullName = 16,
+			colPurpose = 17;
+	
+		var tbReport;
+		
+		$(document).ready(function() {
+			
+			/* advanced search date picker from date */
+			var dpAdvancedSearchFromDate = new dhtmlXCalendarObject(["advFromDate"]);
+			dpAdvancedSearchFromDate.setDateFormat("%d/%m/%Y");
+
+			/* advanced search date picker from date */
+			var dpAdvancedSearchToDate = new dhtmlXCalendarObject(["advToDate"]);
+			dpAdvancedSearchToDate.setDateFormat("%d/%m/%Y");
+
+			 tbReport = $('#tbReport').dataTable( {
+				columnDefs: [ 
+					{targets:[colNo], sortable:false, searchable:false},
+					{targets:[colSenderAddress], visible:false},
+					{targets:[colSenderDOB], visible:false},
+					{targets:[colSenderIdentityNo], visible:false},
+					{targets:[colExpiredDate], visible:false}
+				],
+				processing: true,
+				serverSide: true,
+		        scrollX: "100%",
+		        scrollXInner: "200%",
+		        scrollY: "300",
+		        scrollCollapse: true,
+		        pagingType: "full_numbers",
+		        deferLoading: 0,
+				ajaxSource: "@routes.ReportController.getRemittanceReport()",
+				dom: 'l<"export-excel">rtip',
+				fnServerParams: function ( aoData ) {
+					$frmReportInputWithValue = $("#frmAdvancedSearch").find('input[type="text"][value!=""],input[type="radio"]:checked,input[type="checkbox"]:checked,textarea[value!=""],select[value!=""]');
+					$frmReportInputWithValue.each(function () {
+		                var that = $(this), value = that.val();
+		                if (typeof value === "string") {
+		                	aoData.push({ "name": that.attr("name"), "value": value });
+		                }
+		                else if (Object.prototype.toString.apply(value) === '[object Array]') {
+		                    // for multi select because it has an array of selected values
+		                    var i;
+		                    for (i = 0; i < value.length; i++) {
+		                    	aoData.push({ "name": that.attr("name"), "value": value[i] });
+		                    }
+		                }
+		          	});
+			    },
+			    fnDrawCallback: function(){
+			    	/* disable button search if no record found */
+			    	var emptyRow = $('#tbReport td.dataTables_empty');
+			    	if(emptyRow.length == 0){
+						$('#btnExportExcel').removeClass('disabled');
+				    }else{
+				    	$('#btnExportExcel').addClass('disabled');
+					}
+			    },
+				fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+					$('td', nRow).on('dblclick', function() { 
+						preparePopupBeforeShowModalCopyData(aData);
+						$('#modalReportCopyData').modal("show");
+					});
+				}
+			});
+				
+			function fnShowHide(colIndex, visible){
+				var tbReport = $('#tbReport').dataTable();
+				tbReport.fnSetColumnVis(colIndex, visible);
+			}
+			
+			$('#modalAdvancedSearch').on('show.bs.modal', function() {
+				$('#frmAdvancedSearch').bootstrapValidator('resetForm', true);
+				clearAdvancedSearchControls();
+			});
+			
+			function showHideColumns(){
+				if($('#chkShowSenderAddress').prop('checked') == true){
+					fnShowHide(colSenderAddress, true);
+				}else{
+					fnShowHide(colSenderAddress, false);
+				}
+				if($('#chkShowSenderDOB').prop('checked') == true){
+					fnShowHide(colSenderDOB, true);
+				}else{
+					fnShowHide(colSenderDOB, false);
+				}
+				if($('#chkShowSenderIdentityNo').prop('checked') == true){
+					fnShowHide(colSenderIdentityNo, true);
+				}else{
+					fnShowHide(colSenderIdentityNo, false);
+				}
+				if($('#chkShowExpiredDate').prop('checked') == true){
+					fnShowHide(colExpiredDate, true);
+				}else{
+					fnShowHide(colExpiredDate, false);
+				}
+			}
+			
+			function clearAdvancedSearchControls(){
+				$('#frmAdvancedSearch').find('input[type="text"]').each(function(index, value){
+					$(this).val('');
+				});
+				$('#chkShowSenderAddress').attr('checked',false);
+				$('#chkShowSenderDOB').attr('checked',false);
+				$('#chkShowSenderIdentityNo').attr('checked',false);
+				$('#chkShowExpiredDate').attr('checked',false);
+			}
+
+			function preparePopupBeforeShowModalCopyData(dr){
+				var result = '';
+				var isColSenderAddressVisible = $('#chkShowSenderAddress').prop('checked');
+				var isColBankRefVisible = $('#chkShowSenderDOB').prop('checked');
+				var isColSenderFullNameVisible = $('#chkShowSenderIdentityNo').prop('checked');
+				var isColCBRefVisible = $('#chkShowExpiredDate').prop('checked');
+
+				result += 'DATE: ' + dr[colDate] + '\n'
+				result += 'REF: ' + dr[colBankRef] + '\n'
+				result += 'CUSTOMER\'S NAME: ' + dr[colSenderName] + '\n'
+				result += 'C.B Ref.: ' + dr[colSenderCBRef] + '\n'
+
+				if(isColSenderAddressVisible == true){
+					result += 'ADD.: ' + dr[colSenderAddress] + '\n'
+				}
+				if(isColBankRefVisible == true){
+					result += 'DOB.: ' + dr[colSenderDOB] + '\n'
+				}
+				if(isColSenderFullNameVisible == true){
+					result += 'ID/PASSPORT NO.: ' + dr[colSenderIdentityNo] + '\n'
+				}
+				if(isColCBRefVisible == true){
+					result += 'EXPIRED DATE: ' + dr[colExpiredDate] + '\n'
+				}
+
+				result += 'AMOUNT OUTWARD: ' + dr[colAmount] + '\n'
+				result += 'CURRENCY: ' + dr[colCurrency] + '\n'
+				result += 'EX.: ' + dr[colExchange] + '\n'
+				result += 'Fee: ' + dr[colFee] + '\n'
+				result += 'Cable: ' + dr[colCable] + '\n'
+				result += 'OUR: ' + dr[colOur] + '\n'
+				result += 'BENEFICIARY\'S ACC: ' + dr[colReceiverAccountNo] + '\n'
+				result += 'BENEFICIARY\'S NAME: ' + dr[colReceiverFullName] + '\n'
+				result += 'PURPOSE: ' + dr[colPurpose];
+				
+				$('#txtCopyData').val(result);
+			}
+				
+			$("div.export-excel").append('&nbsp;<a name="btnExportExcel" id="btnExportExcel" href="@routes.ReportController.exportExcel" target="_blank" class="btn btn-primary pull-right disabled">Export Excel</a>');
+			$("div.export-excel").append('&nbsp;<button type="button" class="btn btn-primary pull-right col-margin-right" id="btnAdvancedSearch" data-toggle="modal" data-target="#modalAdvancedSearch">Advanced Search</button>&nbsp;');
+			$("div.export-excel").append('&nbsp;<button type="button" class="btn btn-primary pull-right col-margin-right" id="btnClearSearch">Clear Search</button>&nbsp;');
+		    
+	        
+	        $("#btnClearSearch").click(function () {
+				clearAdvancedSearchControls();
+				tbReport.fnReloadAjax();
+	        });
+
+	        function getCurrentDateString(){
+	        	var d = new Date();
+	        	var month = d.getMonth()+1;
+	        	var day = d.getDate();
+        	    var output = (day<10 ? '0' : '') + day + '/' + (month<10 ? '0' : '') + month + '/' + d.getFullYear();
+        	    return output;
+		    }
+	        
+		    /* Validate form advanced search remittance and submit */
+		    $('#frmAdvancedSearch').bootstrapValidator({
+		    	excluded: [':disabled', ':hidden', ':not(:visible)'],
+		    	live: 'enabled',
+		    	container: 'tooltip',
+		        feedbackIcons: {
+		            valid: 'glyphicon',
+		            invalid: 'glyphicon',
+		            validating: 'glyphicon glyphicon-refresh'
+		        },
+		        fields:{
+		        	searchFromDate:{
+						validators:{
+							date: {
+								format: 'DD/MM/YYYY',
+								message: 'Invalid date'
+							}
+						}
+					},
+					searchToDate:{
+						validators:{
+							date: {
+								format: 'DD/MM/YYYY',
+								message: 'Invalid date'
+							}
+						}
+					}					
+			    }
+		    })	        
+			.on('success.form.bv', function(e) {
+				e.preventDefault();
+				tbReport.fnReloadAjax();
+				showHideColumns();
+				$('#modalAdvancedSearch').modal("hide");				
+			});	    
+		}); /* end document ready */
+		
+	</script>
+
+}

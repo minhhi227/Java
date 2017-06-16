@@ -1,0 +1,6 @@
+@(errorMessage: String)
+@main("Global error", null, null, null, null,null) {
+	<div>
+		@errorMessage
+	</div>
+}

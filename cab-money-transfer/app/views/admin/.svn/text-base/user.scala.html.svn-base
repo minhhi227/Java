@@ -1,0 +1,499 @@
+@(user: User, branchList: List[Branch], roleList: List[Role], nav: String)
+
+@import utils.DateUtils
+
+@main("USER", user, nav, null, null, null) {
+
+	<!-- Default tab for admin is User tab -->
+	
+	<div class="content-wrapper">
+		<div class="page-header"><h3>List user</h3></div>
+		<table id="tbUser" class="display cell-border compact" cellspacing="0" width="100%">
+			<thead>
+				<tr>
+					<th>N&deg;</th>
+					<th>ID</th>
+					<th>Branch</th>
+					<th>Username</th>					
+					<th>Role</th>
+					<th>Full name</th>
+					<th>Date of Birth</th>
+					<th>Phone</th>
+					<th>Email</th>
+					<th>Address</th>
+					<th>Active</th>
+					<th>BranchId</th>
+					<th>RoleId</th>
+					<th>Password</th>
+				</tr>
+			</thead>
+			<tbody></tbody>
+		</table>
+	</div>
+	
+<!-- pop up create or update user-->
+<div id="popupAddEditUser" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="popupAddEditUser" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+				<h4 class="modal-title" id="popupAddEditUserTitle">Create User</h4>
+			</div>
+			<form role="form" id="frmUser" data-toggle="validator" action="javascript:return;" method="post">
+				<div class="modal-body">
+					<input type="hidden" name="userId" id="userId" value="0"/>
+					<div id="user-alert-success" class="alert alert-success hidden" role="alert" alert-dismissable><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Saved successfully</div>
+					<div id="user-alert-warning" class="alert alert-warning hidden" role="alert" alert-dismissable><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Username exists</div>
+					<div id="user-alert-danger" class="alert alert-danger hidden" role="alert" alert-dismissable><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>JSON expected</div>
+					
+					<div class="row"> <!-- Row 1 -->
+						<div class="col-md-6 form-group">
+							<label class="control-label">Full Name</label>
+							<input type="text" name="fullName" class="form-control" placeholder="full name" required/>
+						</div>
+						<div class="col-md-6 form-group">
+							<label class="control-label">Date of Birth</label>
+			                <div class="input-group">
+			                    <input type="text" name="dateOfBirth" id="dpDateOfBirth" class="form-control" placeholder="date of birth"/>
+			                    <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+			                </div>
+						</div>
+					</div>
+					<div class="row"> <!-- Row 2 -->
+						<div class="col-md-6 form-group">
+							<label class="control-label">Phone</label>
+							<input type="text" name="phone" class="form-control" placeholder="phone"/>
+						</div>
+						<div class="col-md-6 form-group">
+							<label class="control-label">Email</label>
+							<input type="email" name="email" class="form-control" placeholder="email"/>
+						</div>
+					</div>
+					<div class="row"> <!-- Row 3 -->
+						<div class="col-md-12 form-group">
+							<label class="control-label">Address</label>
+							<textarea name="address" class="form-control" rows="2" placeholder="address" maxLength="255"></textarea>	
+						</div>				
+					</div>	
+					<div class="row"> <!-- Row 4 -->
+						<div class="col-md-6 form-group">
+							<div class="row">
+								<div class="col-md-6">
+									<label class="control-label">Branch</label>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-md-10" style="padding-right:0px;">
+									<select class="form-control" name="branch" required>
+									@if(branchList != null){
+										@for(branch <- branchList){
+											<option value="@branch.getId()">@branch.getName()</option>
+										}
+									}
+									</select>								
+								 </div>
+								<div class="col-md-1" style="padding-left:0px;">
+									<button type="button" id="btnAddBranch" class="btn btn-default pull-left" style="height: 29px;"><span class="glyphicon glyphicon-plus-sign"></span></button>
+								 </div>
+							</div>
+						</div>
+						<div class="col-md-6 form-group">
+							<label class="control-label">Role</label>
+							<select class="form-control" name="role" required>
+							@if(roleList != null){
+								@for(role <- roleList){
+									<option value="@role.getId()">@role.getLabel()</option>
+								}
+							}
+							</select>
+						</div>
+					</div>
+					<div class="row"> <!-- Row 5 -->
+						<div class="col-md-6 form-group">
+							<label class="control-label">Username</label>
+							<input type="text" name="username" class="form-control" placeholder="username" required/>	
+						</div>	
+						<div class="col-md-6 form-group">
+							<label class="control-label">Active</label>
+							<input type="checkbox" name="active" class="form-control" data-on-text="YES" data-off-text="NO" data-on-color="primary"/>
+						</div>			
+					</div>
+					<div class="row"> <!-- Row 6 -->
+						<div class="col-md-6 form-group">
+							<label class="control-label">Password</label>
+							<input type="password" name="password" id="password" class="form-control" placeholder="password" required/>
+						</div>	
+						<div class="col-md-6 form-group">
+							<label class="control-label">Re-enter password</label>
+							<input type="password" name="confirmPassword" class="form-control" placeholder="re-enter password" required/>	
+						</div>			
+					</div>
+					
+				</div>
+				<div class="modal-footer">
+					<button id="btnSaveUser" type="submit" class="btn btn-primary">Save</button>
+					<button id="btnCancel" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+<!-- end pop up create or update user -->
+
+<!-- pop up save or update branch-->
+<div id="popupSaveOrUpdateBranch" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="popupSaveOrUpdateBranch" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+				<h4 class="modal-title" id="popupSaveOrUpdateBranchTitle">Add New Branch</h4>
+			</div>
+			<form role="form" id="frmBranch" action="@routes.UserController.saveOrUpdateBranch()" method="post">
+				<div class="modal-body">
+					<div id="branch-alert-success" class="alert alert-success hidden" role="alert" alert-dismissable><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Saved successfully</div>
+					<div id="branch-alert-warning" class="alert alert-warning hidden" role="alert" alert-dismissable><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Branch exists</div>
+					<div id="branch-alert-danger" class="alert alert-danger hidden" role="alert" alert-dismissable><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>JSON expected</div>
+					<input type="hidden" name="branchId" id="branchId" value="0"/>
+					<div class="row"> <!-- Row 1 -->
+						<div class="col-md-6 form-group">
+							<label class="control-label">Name</label>
+							<input type="text" name="branchName" class="form-control" placeholder="name" required/>
+						</div>
+						<div class="col-md-6 form-group">
+							<label class="control-label">Phone</label>
+							<input type="text" name="branchPhone" class="form-control" placeholder="phone"/>
+						</div>
+					</div>
+					<div class="row"> <!-- Row 2 -->
+						<div class="col-md-6 form-group">
+							<label class="control-label">Bank Ref.</label>
+							<input type="text" name="branchBankRef" class="form-control" placeholder="bank ref." required/>
+						</div>
+						<div class="col-md-6 form-group">
+							<label class="control-label">Init Bank Code</label>
+							<input type="text" name="branchInitBankCode" class="form-control" value="1" required/>
+						</div>
+					</div>					
+					<div class="row"> <!-- Row 3 -->
+						<div class="col-md-12 form-group">
+							<label class="control-label">Address</label>
+							<textarea name="branchAddress" class="form-control" rows="2" placeholder="address" maxLength="255"></textarea>	
+						</div>				
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button id="btnSaveBranch" type="submit" class="btn btn-primary">Save</button>
+					<button id="btnCancel" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+<!-- end pop up save or update branch-->
+
+	<!-- jQuery -->
+	<script src="@routes.Assets.at("javascripts/jquery-1.11.1.min.js")"></script>
+	<!-- JS Bootstrap -->		
+	<script type="text/javascript" src="@routes.Assets.at("bootstrap/js/bootstrap.min.js")" defer></script>
+	<!-- JS Bootstrap Switch -->
+	<script type="text/javascript" src="@routes.Assets.at("bootstrap/js/bootstrap-switch.min.js")" defer></script>
+	<!-- JS fnReloadAjax -->
+	<script type="text/javascript" language="javascript" src="@routes.Assets.at("plugins/datatables-1.10.2/fnReloadAjax.js")" defer></script>
+	
+	<script type="text/javascript" language="javascript">
+		var colNo = 0;
+		var colId = 1;
+		var colBranch = 2;
+		var colUsername = 3;
+		var colRole = 4;
+		var colFullName = 5;
+		var colDateOfBirth = 6;
+		var colPhone = 7;
+		var colEmail = 8;
+		var colAddress = 9;
+		var colActive = 10;
+		var colBranchId = 11;
+		var colRoleId = 12;
+		var colPassword = 13;
+		var i=0;
+
+		var tbUser
+		
+		$(document).ready(function() {
+			
+			/*
+			* dataTables : tbUser
+			*/
+			tbUser = $('#tbUser').dataTable({
+				columnDefs: [ 
+					{targets:[colNo], sortable:false,orderable: false,searchable:false},
+					{targets:[colId], visible:false, searchable:false},
+					{targets:[colEmail], visible:false, searchable:false},
+					{targets:[colAddress], visible:false, searchable:false},
+					{targets:[colBranchId], visible:false, searchable:false},
+					{targets:[colRoleId], visible:false, searchable:false},
+					{targets:[colPassword], visible:false, searchable:false}
+				],
+				dom: 'fl<"toolbar">tip',
+				pagingType: "full_numbers",
+				displayLength: 10,
+				deferLoading: 0,
+	            serverSide: true,	
+	            processing: true,
+	            stateSave: true,
+				ajaxSource: "@routes.UserController.filterUser()",
+<!--		        createdRow: function ( row, data, index ) {-->
+<!--		        	$('#tbUser tbody').children().eq(index).children().eq(colNo).html(index + 1);-->
+<!--		        },-->
+				fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+					$('td', nRow).on('dblclick', function() { 
+						preparePopupBeforeEditUser(aData);
+						$('#popupAddEditUser').modal("show");
+					}); 
+				}
+			});
+
+			tbUser.fnReloadAjax();
+		
+			$("div.toolbar").html('&nbsp;<a id="btnAddUser" class="btn btn-primary">Add</a>');
+
+			/* date picker date of birth */
+			var dpDateOfBirth = new dhtmlXCalendarObject(["dpDateOfBirth"]);
+			dpDateOfBirth.setDateFormat("%d/%m/%Y");
+
+			$('#btnAddUser').click(function(){
+				preparePopupBeforeAddUser();
+				$('#popupAddEditUser').modal("show");
+			});
+			
+			$('#btnAddBranch').click(function(){
+				preparePopupBeforeAddBranch();
+				$('#popupSaveOrUpdateBranch').modal("show");
+			});
+			
+			function preparePopupBeforeEditUser(dr){
+				$('#popupAddEditUserTitle').html('Edit User');
+				$('#btnSaveUser').html('Update');
+				
+				$('#userId').val(dr[colId]);
+				$("input[name='username']").val(dr[colUsername]);
+				$("select[name='branch']").val(dr[colBranchId]);
+				$("select[name='role']").val(dr[colRoleId]);
+				$("input[name='fullName']").val(dr[colFullName]);
+				$("input[name='dateOfBirth']").val(dr[colDateOfBirth]);
+				$("input[name='phone']").val(dr[colPhone]);
+				$("input[name='email']").val(dr[colEmail]);
+				$("textarea[name='address']").val(dr[colAddress]);
+				$("input[name='active']").bootstrapSwitch('state', (dr[colActive] == true));
+				$("input[name='password']").val(dr[colPassword]);
+				$("input[name='confirmPassword']").val(dr[colPassword]);
+			}
+
+			function preparePopupBeforeAddUser(){
+				clearPopupControls();
+				$('#popupAddEditUserTitle').html('Create User');
+				$('#btnSaveUser').html('Save');
+			}
+			
+			function preparePopupBeforeAddBranch(){
+				$("input[name='branchName']").val('');
+				$("input[name='branchPhone']").val('');
+				$("textarea[name='branchAddress']").val('');
+				$('#popupSaveOrUpdateBranchTitle').html('Add New Branch');
+				$('#btnSaveBranch').html('Save');
+			}
+			
+			function clearPopupControls(){
+				$('#userId').val('0');
+				$("input[name='username']").val('');
+				$("input[name='fullName']").val('');
+				$("input[name='dateOfBirth']").val('');
+				$("input[name='phone']").val('');
+				$("input[name='email']").val('');
+				$("textarea[name='address']").val('');
+				$("input[name='active']").bootstrapSwitch('state', true);
+				$("input[name='password']").val('');
+				$("input[name='confirmPassword']").val('');				
+			}
+
+			$('#popupAddEditUser').on('hide.bs.modal', function () {
+				$('form#frmUser').bootstrapValidator('resetForm', true);
+			})
+			
+			/* validate form User and submit */
+			// revalidate datePicker after clicking a date
+			dpDateOfBirth.attachEvent("onClick", function(date){
+				$('form#frmUser').bootstrapValidator('revalidateField', 'dateOfBirth');
+			});			
+		    $('form#frmUser').bootstrapValidator({
+		    	excluded: [':disabled', ':hidden', ':not(:visible)'],
+		    	live: 'enabled',
+		    	container: 'tooltip',
+		        feedbackIcons: {
+		            valid: 'glyphicon',
+		            invalid: 'glyphicon',
+		            validating: 'glyphicon glyphicon-refresh'
+		        },
+		        fields: {
+		            fullName: {
+		                validators: {
+		                    regexp: {
+		                        regexp: /^[a-z\s]+$/i,
+		                        message: 'The full name can consist of alphabetical characters and spaces only'
+		                    }		                    
+		                }
+		            },
+		            dateOfBirth: {
+		                validators: {
+		                	date: {
+		                		format: 'DD/MM/YYYY',
+		                		message: 'Invalid date'
+		                	}               
+		                }
+		            },		            
+	                password: {
+	                    validators: {
+	                        identical: {
+	                            field: 'confirmPassword',
+	                        	message: 'Passwords do not match'
+	                        },
+	                    	stringLength: {
+	                    		min: 6,
+	                    		message: 'Min is 6 characters long'
+	                    	}	                        
+	                    }
+	                },
+	                confirmPassword: {
+	                    validators: {
+	                        identical: {
+	                            field: 'password',
+	                        	message: 'Passwords do not match'
+	                        },
+	                    	stringLength: {
+	                    		min: 6,
+	                    		message: 'Min is 6 characters long'
+	                    	}	                        
+	                    }
+	                }
+		        }
+		    })
+		    .on('success.form.bv', function(e) {
+		    	e.preventDefault(); // Prevent submit form 
+				var that = $(this),
+				url = that.attr('action'),
+				type = that.attr('method'),
+				data = {};
+				that.find('[name]').each(function(index, value){
+					var that = $(this),
+						name = that.attr('name'),
+						value = that.val();
+					if(that.attr('type') != null && that.attr('type')=='checkbox'){
+						data[name] = that.prop('checked');
+					}else{
+						data[name] = value;
+					}
+				});
+				data['updateTime'] = new Date().getTime();
+				$.ajax({
+	       			url: '@routes.UserController.saveOrUpdateUser()',
+	       			type: type,
+	       			dataType: 'json',
+	       			data: JSON.stringify(data),
+	       			contentType : "application/json",
+	       			success: function(response) {
+	       				if(response == 'user_exists'){
+	       					$('#user-alert-warning').removeClass('hidden');
+			       			setTimeout(function(){
+			       				$('#user-alert-warning').addClass('hidden');
+			       			}, 3000);
+				       	}else if(response == 'json_expected'){
+				       		$('#user-alert-danger').removeClass('hidden');
+			       			setTimeout(function(){
+			       				$('#user-alert-danger').addClass('hidden');
+			       			}, 3000);
+					    }else{
+					    	tbUser.fnReloadAjax();
+			       			$('#user-alert-success').removeClass('hidden');
+					    	$("#user-alert-success").slideDown("slow");
+							window.setTimeout(function(){$("#user-alert-success").slideUp("slow");},2000);
+							$('#frmUser').data('bootstrapValidator').resetForm();
+							$('#frmUser').find('input[type="text"],input[type="password"],input[type="email"],textarea').val("");
+			       		}
+		       		},
+		            error: function(jqXHR, textStatus, errorThrown){
+		            	bootbox.alert(jqXHR.status + ' : ' + textStatus + ', ' + jqXHR.statusText, function() {});
+		            }
+		       	});
+			    return false;
+		    });
+
+
+		    /* Validate form Branch and submit */
+		    $('#frmBranch').bootstrapValidator({
+		    	excluded: [':disabled', ':hidden', ':not(:visible)'],
+		    	live: 'enabled',
+		    	container: 'tooltip',
+		        feedbackIcons: {
+		            valid: 'glyphicon',
+		            invalid: 'glyphicon',
+		            validating: 'glyphicon glyphicon-refresh'
+		        }
+		    })
+		    .on('success.form.bv', function(e) {
+		    	e.preventDefault(); // Prevent submit form 
+				var that = $(this),
+				url = that.attr('action'),
+				type = that.attr('method'),
+				data = {};
+				that.find('[name]').each(function(index, value){
+					var that = $(this),
+						name = that.attr('name'),
+						value = that.val();
+					if(that.attr('type') != null && that.attr('type')=='checkbox'){
+						data[name] = that.prop('checked');
+					}else{
+						data[name] = value;
+					}
+				});
+				data['updateTime'] = new Date().getTime();
+				$.ajax({
+	       			url: url,
+	       			type: type,
+	       			dataType: 'json',
+	       			data: JSON.stringify(data),
+	       			contentType : "application/json",
+	       			success: function(response) {
+	       				if(response == 'branch_exists'){
+	       					$('#branch-alert-warning').removeClass('hidden');
+			       			setTimeout(function(){
+			       				$('#branch-alert-warning').addClass('hidden');
+			       			}, 3000);
+				       	}else if(response == 'json_expected'){
+				       		$('#branch-alert-danger').removeClass('hidden');
+			       			setTimeout(function(){
+			       				$('#branch-alert-danger').addClass('hidden');
+			       			}, 3000);
+					    }else{
+			       			var result = response.split("||");
+			       			var branchId = result[0];
+			       			var branchName = result[1];
+			       			$("select[name='branch']").append('<option value="' + branchId + '">' + branchName + '</option>');
+			       			
+			       			$('#branch-alert-success').removeClass('hidden');
+			       			$("#branch-alert-success").slideDown("slow");
+			       			window.setTimeout(function(){$("#branch-alert-success").slideUp("slow");},2000);
+			       			$('#frmBranch').data('bootstrapValidator').resetForm();
+			       			$('#frmBranch').find('input[type="text"],textarea').val("");
+			       		}
+		       		},
+		            error: function(jqXHR, textStatus, errorThrown){
+		            	bootbox.alert(jqXHR.status + ' : ' + textStatus + ', ' + jqXHR.statusText, function() {});
+		            }
+		       	});
+			    return false;
+		    });
+		}); /* end document ready */
+		
+	</script>
+
+}

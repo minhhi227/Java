@@ -1,0 +1,85 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# ============================================================================
+# Home page
+# ============================================================================
+GET		/						   controllers.Application.index()
+
+# ============================================================================
+# Authentication
+# ============================================================================
+GET     /login                     controllers.LoginController.login()
+POST    /login                     controllers.LoginController.authenticate()
+GET     /logout                    controllers.LoginController.logout()
+GET     /session-expired.html	   controllers.LoginController.sessionExpired()
+GET		/redirectPage			   controllers.LoginController.redirectPage(username:String)
+GET		/no-authorization		   controllers.LoginController.noAuthorization()
+
+# ============================================================================
+# User
+# ============================================================================
+GET     /admin            			controllers.UserController.index()
+GET		/admin/filterUser			controllers.UserController.filterUser()
+POST	/admin/saveOrUpdateUser		controllers.UserController.saveOrUpdateUser()
+POST	/admin/saveOrUpdateBranch	controllers.UserController.saveOrUpdateBranch()
+
+# ============================================================================
+# Rule Fill Amount
+# ============================================================================
+GET     /rule-fill-amount           controllers.RuleFillAmountManagementController.index()
+GET     /rule-fill-amount/getAll    controllers.RuleFillAmountManagementController.getAll()
+POST    /rule-fill-amount/update    controllers.RuleFillAmountManagementController.update()
+
+# ============================================================================
+# Sender
+# ============================================================================
+GET     /sender						controllers.SenderController.index()
+GET	    /sender/checkAccount		controllers.SenderController.checkAccount()
+GET	    /sender/isInTransaction		controllers.SenderController.isInTransaction()
+GET		/sender/filterSender		controllers.SenderController.filterSender()
+POST	/sender/saveOrUpdateSender	controllers.SenderController.saveOrUpdateSender()
+GET	/sender/filterSenderByFullName controllers.SenderController.filterSenderByFullName()
+
+# ============================================================================
+# Receiver
+# ============================================================================
+GET     /receiver            			controllers.ReceiverController.index()
+GET     /receiver/filterReceiver        controllers.ReceiverController.filterReceiver()
+POST	/receiver/saveOrUpdateReceiver	controllers.ReceiverController.saveOrUpdateReceiver()
+GET		/receiver/filterByFullNameANDAccountNo controllers.ReceiverController.filterByFullNameANDAccountNo()
+
+# ============================================================================
+# Remittance
+# ============================================================================
+GET     /remittance            					controllers.RemittanceController.index()
+GET		/remittance/getRemittanceList			controllers.RemittanceController.getRemittanceList()
+GET		/remittance/getById 					controllers.RemittanceController.getById()
+POST    /remittance/saveOrUpdate			   	controllers.RemittanceController.saveOrUpdateRemittanceTransaction()
+POST    /remittance/updateTransactionStatus    	controllers.RemittanceController.updateTransactionStatus()
+POST    /remittance/preview			   			controllers.RemittanceController.previewRemittanceTransaction()
+GET     /remittance/getBankReference         	controllers.RemittanceController.getBankReference()
+GET     /remittance/continueTransaction		    controllers.RemittanceController.continueTransaction()
+GET     /remittance/getNotificationsForCO       controllers.RemittanceController.getNotificationsForCO()
+GET     /remittance/getNotificationsForTeller   controllers.RemittanceController.getNotificationsForTeller()
+GET     /remittance/getSenderByRecierId   		controllers.RemittanceController.getSenderByRecieverId()
+GET     /remittance/getReceiverBySenderId	    controllers.RemittanceController.getRecieverBySenderId()
+GET     /remittance/getRuleFillAmount			controllers.RemittanceController.getRuleFillAmount()
+
+# ============================================================================
+# Report
+# ============================================================================
+GET     /report            				controllers.ReportController.index()
+GET		/report/getRemittanceReport		controllers.ReportController.getRemittanceReport()
+GET		/report/exportExcel				controllers.ReportController.exportExcel()
+GET		/techicalError					controllers.ErrorController.techicalError()
+
+# ============================================================================
+# Settings
+# ============================================================================
+GET     /settings            			controllers.SettingController.index()
+POST	/settings/changePassword		controllers.SettingController.changePassword()
+
+# Map static resources from the /public folder to the /assets URL path
+GET     /assets/*file               controllers.Assets.at(path="/public", file)

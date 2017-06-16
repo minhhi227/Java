@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/JAVA/!svn/ver/184/trunk/cab-remittance/conf
+END
+application.conf
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/JAVA/!svn/ver/197/trunk/cab-remittance/conf/application.conf
+END
+logger.xml
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/JAVA/!svn/ver/5/trunk/cab-remittance/conf/logger.xml
+END
+routes
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/JAVA/!svn/ver/194/trunk/cab-remittance/conf/routes
+END
+logger_prod.xml
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/JAVA/!svn/ver/5/trunk/cab-remittance/conf/logger_prod.xml
+END

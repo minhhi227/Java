@@ -1,0 +1,65 @@
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/JAVA/!svn/ver/197/trunk/cab-remittance/app/controllers
+END
+Application.java
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/JAVA/!svn/ver/27/trunk/cab-remittance/app/controllers/Application.java
+END
+ReportController.java
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/JAVA/!svn/ver/197/trunk/cab-remittance/app/controllers/ReportController.java
+END
+SettingController.java
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/JAVA/!svn/ver/54/trunk/cab-remittance/app/controllers/SettingController.java
+END
+ReceiverController.java
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/JAVA/!svn/ver/199/trunk/cab-remittance/app/controllers/ReceiverController.java
+END
+RemittanceController.java
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/JAVA/!svn/ver/201/trunk/cab-remittance/app/controllers/RemittanceController.java
+END
+UserController.java
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/JAVA/!svn/ver/190/trunk/cab-remittance/app/controllers/UserController.java
+END
+RuleFillAmountManagementController.java
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svn/JAVA/!svn/ver/183/trunk/cab-remittance/app/controllers/RuleFillAmountManagementController.java
+END
+LoginController.java
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/JAVA/!svn/ver/170/trunk/cab-remittance/app/controllers/LoginController.java
+END
+ErrorController.java
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/JAVA/!svn/ver/15/trunk/cab-remittance/app/controllers/ErrorController.java
+END
+SenderController.java
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/JAVA/!svn/ver/199/trunk/cab-remittance/app/controllers/SenderController.java
+END

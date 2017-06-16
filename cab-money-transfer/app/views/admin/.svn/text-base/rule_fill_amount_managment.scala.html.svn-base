@@ -1,0 +1,223 @@
+@(user: User, nav: String)
+
+@import utils.DateUtils
+
+@main("RULE FILL AMOUNT", user, nav, null, null, null) {
+
+	<div class="content-wrapper">
+		<div class="page-header"></div>
+		<table id="tbRuleFillAmount" class="display cell-border compact" cellspacing="0" width="100%">
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>Type Rule</th>
+					<th>Type Sender</th>
+					<th>USD Amount($)</th>
+					<th>Percent Fee(%)</th>
+					<th>Cable</th>
+				</tr>
+			</thead>
+			<tbody></tbody>
+		</table>
+	</div>
+	
+<!-- pop up update rule-->
+<div id="popupUpdateRule" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="popupUpdateRule" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+				<h4 class="modal-title" id="popupSaveOrUpdateBranchTitle">Update Rule Fill Amount</h4>
+			</div>
+			<form role="form" id="frmUpdateRuleManagement" action="@routes.UserController.saveOrUpdateBranch()" method="post">
+				<div class="modal-body">
+					<div id="ruleManagement-alert-success" class="alert alert-success hidden" role="alert" alert-dismissable><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Saved successfully</div>
+					<div id="ruleManagement-alert-danger" class="alert alert-danger hidden" role="alert" alert-dismissable><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Error !</div>
+					<div class="row"> <!-- Row 1 -->
+						<div class="col-md-6 form-group">
+							<label class="control-label">Rule Type</label>
+							<input type="text" name="ruleTYpe" class="form-control" placeholder="Rule Type" disabled="disabled"/>
+						</div>
+						<div class="col-md-6 form-group">
+							<label class="control-label">Type Sender</label>
+							<input type="text" name="typeSender" class="form-control" placeholder="Type Sender" disabled="disabled"/>
+						</div>
+					</div>
+					<div class="row"> <!-- Row 2 -->
+						<div class="col-md-6 form-group">
+							<label class="control-label">USD Amount($)</label>
+							<input type="text" name="usdAmount" class="form-control" placeholder="USD Amount($)"/>
+						</div>
+						<div class="col-md-6 form-group">
+							<label class="control-label">Percent Fee(%)</label>
+							<input type="text" name="percentFee" class="form-control" placeholder="0(%)"/>
+						</div>
+					</div>					
+					<div class="row"> <!-- Row 3 -->
+						<div class="col-md-6 form-group">
+							<label class="control-label">Cable</label>
+							<input type="text" name="cable" class="form-control" placeholder="0"/>
+						</div>			
+					</div>
+				</div>
+				<div class="modal-footer">
+					<input type="hidden" name="hidRuleManagementId" class="form-control"/>
+					<button id="btnRuleManagementUpdate" type="submit" class="btn btn-primary">Update</button>
+					<button id="btnRuleManagementCancel" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+<!-- end pop up save or update branch-->
+	
+	<!-- jQuery -->
+	<script src="@routes.Assets.at("javascripts/jquery-1.11.1.min.js")"></script>
+	<!-- JS Bootstrap -->		
+	<script type="text/javascript" src="@routes.Assets.at("bootstrap/js/bootstrap.min.js")" defer></script>
+	<!-- JS fnReloadAjax -->
+	<script type="text/javascript" language="javascript" src="@routes.Assets.at("plugins/datatables-1.10.2/fnReloadAjax.js")" defer></script>
+	
+	
+	<script type="text/javascript" language="javascript">
+		var tbRuleFillAmount
+		$(document).ready(function() {
+			
+			/*
+			* dataTables : tbUser
+			*/
+			tbRuleFillAmount = $('#tbRuleFillAmount').dataTable({
+				oLanguage: {
+				    "sSearch": " "
+				},
+				bInfo: false,
+				bPaginate:false,
+				dom: 'flt<"advanceSearch">ip',
+				columnDefs: [ 
+								{targets:[0], visible:false,sortable:false, searchable:false},
+								{targets:[1], sortable:false, searchable:false},
+								{targets:[2], sortable:false, searchable:false},
+								{targets:[3], sortable:false, searchable:false},
+								{targets:[4], sortable:false, searchable:false},
+								{targets:[5], sortable:false, searchable:false}
+							],
+	            serverSide: true,	
+	            processing: true,
+	            stateSave: true,
+				ajaxSource: "@routes.RuleFillAmountManagementController.getAll()",
+				fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+					$('td', nRow).on('dblclick', function() { 
+						preparePopupBeforeEdit(aData);
+						$('#popupUpdateRule').modal("show");
+					}); 
+				}
+			});
+		
+			if(document.getElementById("tbRuleFillAmount_filter") != null) {
+				var searchFilter = $('#tbRuleFillAmount_filter').find('input[type="search"]');
+				searchFilter.each(function () {
+					var $input = $(this);
+					$input.hide();
+				});
+			}
+		
+			$('form#frmUpdateRuleManagement').bootstrapValidator({
+		    	excluded: [':disabled', ':hidden', ':not(:visible)'],
+		    	live: 'enabled',
+		    	container: 'tooltip',
+		        feedbackIcons: {
+		            valid: 'glyphicon',
+		            invalid: 'glyphicon',
+		            validating: 'glyphicon glyphicon-refresh'
+		        },
+		        fields: {
+		        	usdAmount: {
+		                validators: {
+		                    regexp: {
+		                        regexp: /[0-9]/i,
+		                        message: 'Number only'
+		                    }		                    
+		                }
+		            },
+		            percentFee: {
+		                validators: {
+		                    regexp: {
+		                    	regexp: /[0-9]/i,
+		                        message: 'Number only'
+		                    }		                    
+		                }
+		            },
+		            cable: {
+		                validators: {
+		                    regexp: {
+		                    	regexp: /[0-9]/i,
+		                        message: 'Number only'
+		                    }		                    
+		                }
+		            }
+		        }
+		    })
+		    .on('success.form.bv', function(e) {
+		    	e.preventDefault(); // Prevent submit form 
+				var that = $(this),
+				url = "",
+				type = that.attr('method'),
+				data = {};
+				that.find('[name]').each(function(index, value){
+					var that = $(this),
+						name = that.attr('name'),
+						value = that.val();
+					data[name] = value;
+				});
+				data['updateTime'] = new Date().getTime();
+				$.ajax({
+	       			url: '@routes.RuleFillAmountManagementController.update()',
+	       			type: type,
+	       			dataType: 'json',
+	       			data: JSON.stringify(data),
+	       			contentType : "application/json",
+	       			success: function(response) {
+	       				if(response == "success") {
+	       					tbRuleFillAmount.fnReloadAjax();
+	       					$('#ruleManagement-alert-success').removeClass('hidden');
+					    	$("#ruleManagement-alert-success").slideDown("slow");
+							window.setTimeout(function(){
+								$("#ruleManagement-alert-success").slideUp("slow");
+								$('#popupUpdateRule').modal("hide");
+							},2000);
+	       				} else {
+	       					$('#ruleManagement-alert-danger').removeClass('hidden');
+					    	$("#ruleManagement-alert-danger").slideDown("slow");
+	       				}
+		       		},
+		            error: function(jqXHR, textStatus, errorThrown){
+		            	bootbox.alert(jqXHR.status + ' : ' + textStatus + ', ' + jqXHR.statusText, function() {});
+		            }
+		       	});
+			    return false;
+		    });
+		    
+		}); /* end document ready */
+		
+		function clearPopupEditRule() {
+			$("input[name='hidRuleManagementId']").val('0');
+			$("input[name='ruleTYpe']").val("");
+			$("input[name='typeSender']").val("");
+			$("input[name='usdAmount']").val("");
+			$("input[name='percentFee']").val("");
+			$("input[name='cable']").val("");
+		}
+		
+		function preparePopupBeforeEdit(dr){
+			clearPopupEditRule();
+			$("input[name='hidRuleManagementId']").val(dr[0]);
+			$("input[name='ruleTYpe']").val(dr[1]);
+			$("input[name='typeSender']").val(dr[2]);
+			$("input[name='usdAmount']").val(dr[3]);
+			$("input[name='percentFee']").val(dr[4]);
+			$("input[name='cable']").val(dr[5]);
+		}
+		
+	</script>
+
+}

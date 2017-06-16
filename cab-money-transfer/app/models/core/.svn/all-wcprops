@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/JAVA/!svn/ver/96/trunk/cab-remittance/app/models/core
+END
+UserAuditable.java
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/JAVA/!svn/ver/74/trunk/cab-remittance/app/models/core/UserAuditable.java
+END
+AbstractDateAuditableEntity.java
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/JAVA/!svn/ver/33/trunk/cab-remittance/app/models/core/AbstractDateAuditableEntity.java
+END
+DateAuditable.java
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/JAVA/!svn/ver/10/trunk/cab-remittance/app/models/core/DateAuditable.java
+END
+AbstractAuditableEntity.java
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/JAVA/!svn/ver/96/trunk/cab-remittance/app/models/core/AbstractAuditableEntity.java
+END
+AbstractEntity.java
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/JAVA/!svn/ver/33/trunk/cab-remittance/app/models/core/AbstractEntity.java
+END
+Auditable.java
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/JAVA/!svn/ver/10/trunk/cab-remittance/app/models/core/Auditable.java
+END
+Entity.java
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/JAVA/!svn/ver/10/trunk/cab-remittance/app/models/core/Entity.java
+END
+AbstractLongEntity.java
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svn/JAVA/!svn/ver/42/trunk/cab-remittance/app/models/core/AbstractLongEntity.java
+END

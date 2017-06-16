@@ -1,0 +1,8 @@
+[0m[[0mdebug[0m] [0mCopy resource mappings: [0m
+[0m[[0mdebug[0m] [0m	(C:\dev\play\cab-remittance\conf\app.properties,C:\dev\play\cab-remittance\target\scala-2.11\classes\app.properties)[0m
+[0m[[0mdebug[0m] [0m	(C:\dev\play\cab-remittance\conf\application.conf,C:\dev\play\cab-remittance\target\scala-2.11\classes\application.conf)[0m
+[0m[[0mdebug[0m] [0m	(C:\dev\play\cab-remittance\conf\logger.xml,C:\dev\play\cab-remittance\target\scala-2.11\classes\logger.xml)[0m
+[0m[[0mdebug[0m] [0m	(C:\dev\play\cab-remittance\conf\logger_prod.xml,C:\dev\play\cab-remittance\target\scala-2.11\classes\logger_prod.xml)[0m
+[0m[[0mdebug[0m] [0m	(C:\dev\play\cab-remittance\conf\META-INF,C:\dev\play\cab-remittance\target\scala-2.11\classes\META-INF)[0m
+[0m[[0mdebug[0m] [0m	(C:\dev\play\cab-remittance\conf\routes,C:\dev\play\cab-remittance\target\scala-2.11\classes\routes)[0m
+[0m[[0mdebug[0m] [0m	(C:\dev\play\cab-remittance\conf\META-INF\persistence.xml,C:\dev\play\cab-remittance\target\scala-2.11\classes\META-INF\persistence.xml)[0m

@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/JAVA/!svn/ver/194/trunk/cab-remittance/app/models/dto
+END
+ReceiverDto.java
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svn/JAVA/!svn/ver/48/trunk/cab-remittance/app/models/dto/ReceiverDto.java
+END
+JQueryDataTableParamModelDto.java
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/JAVA/!svn/ver/167/trunk/cab-remittance/app/models/dto/JQueryDataTableParamModelDto.java
+END
+RemittanceReportDto.java
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/JAVA/!svn/ver/194/trunk/cab-remittance/app/models/dto/RemittanceReportDto.java
+END
+SenderDto.java
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/JAVA/!svn/ver/48/trunk/cab-remittance/app/models/dto/SenderDto.java
+END
+RemittanceReportDtoContainer.java
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/JAVA/!svn/ver/168/trunk/cab-remittance/app/models/dto/RemittanceReportDtoContainer.java
+END

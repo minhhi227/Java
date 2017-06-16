@@ -1,0 +1,83 @@
+@(formLogin: Form[forms.LoginForm])
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<title>CAB Remittance Login</title>
+		<link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.jpg")" />
+		
+		<!-- CSS Bootstrap -->
+		<link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("bootstrap/css/bootstrap.min.css")" />
+		<!-- CSS Bootstrap Validator -->
+		<link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("bootstrap/css/bootstrapValidator.min.css")" />
+		<!-- jQuery -->
+		<script src="@routes.Assets.at("javascripts/jquery-1.11.1.min.js")"></script>		
+		<!-- JS Bootstrap Validator -->
+		<script type="text/javascript" src="@routes.Assets.at("bootstrap/js/bootstrapValidator.min.js")" defer></script>
+		
+		<script type="text/javascript" language="javascript">
+			$(document).ready(function() {
+			    $('.form-signin').bootstrapValidator({
+			    	excluded: [':disabled', ':hidden', ':not(:visible)'],
+			    	live: 'disabled',
+			    	submitButtons: 'button[type="submit"]',
+			        feedbackIcons: {
+			            valid: 'glyphicon',
+			            invalid: 'glyphicon',
+			            validating: 'glyphicon glyphicon-refresh'
+			        },
+			        fields: {
+			            username: {
+			                validators: {
+			                    notEmpty: {
+			                        message: 'Required'
+			                    }
+			                }
+			            },
+			            password: {
+			                validators: {
+			                    notEmpty: {
+			                        message: 'Required'
+			                    }
+			                }
+			            }
+			        }
+			    });
+			}); /* end document ready */
+		</script>
+	</head>
+	
+    <body class="container" style="width:400px; margin-top:50px;">	
+		<div class="jumbotron">
+			<div>
+				<h2 class="text-center login-title">CAB Remittance</h2>
+				<div class="account-wall">
+					<form class="form-signin" action="@routes.LoginController.authenticate" method="post">
+						@if(formLogin("authenticated").value == "false"){<div id="user-alert-danger" class="alert alert-danger" role="alert">Invalid username or password</div>}
+						<div class="form-group">
+							<label class="control-label">Username</label>
+							<input type="text" name="username" value="@formLogin("username").value" class="form-control" placeholder="Username" autofocus/>
+						</div>
+						<div class="form-group">
+							<label class="control-label">Password</label>
+							<input type="password" name="password" value="@formLogin("password").value" class="form-control" placeholder="Password"/>
+						</div>
+						<div class="form-group">
+							<button type="submit" class="btn btn-lg btn-primary btn-block">Log in</button>
+						</div>
+						<div class="form-group">
+							<label>
+								<input type="checkbox" name="rememberMe" @if(formLogin("rememberMe").value == "true"){ checked="checked" }>
+								Remember me
+							</label>						
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+    </body>
+
+</html>

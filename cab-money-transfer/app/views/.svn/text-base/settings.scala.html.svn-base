@@ -1,0 +1,25 @@
+@(user: User)
+
+@main("Settings", user, null, null, null,null) {
+	
+	<div class="content-wrapper">
+		<center><h1>Page Settings</h1></center>
+	</div>
+
+	<!-- jQuery -->
+	<script src="@routes.Assets.at("javascripts/jquery-1.11.1.min.js")"></script>
+	<!-- JS Bootstrap -->		
+	<script type="text/javascript" src="@routes.Assets.at("bootstrap/js/bootstrap.min.js")" defer></script>
+	<!-- JS Bootstrap Switch -->
+	<script type="text/javascript" src="@routes.Assets.at("bootstrap/js/bootstrap-switch.min.js")" defer></script>
+	<!-- JS Bootstrap Validator -->
+	<!-- <script type="text/javascript" src="@routes.Assets.at("bootstrap/js/bootstrapValidator.min.js")" defer></script>-->
+	
+	<script type="text/javascript" language="javascript">
+		$(document).ready(function() {
+
+		}); /* end document ready */
+		
+	</script>
+
+}

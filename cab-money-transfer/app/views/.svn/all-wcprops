@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/JAVA/!svn/ver/200/trunk/cab-remittance/app/views
+END
+no_authorization.scala.html
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/JAVA/!svn/ver/201/trunk/cab-remittance/app/views/no_authorization.scala.html
+END
+login.scala.html
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/JAVA/!svn/ver/45/trunk/cab-remittance/app/views/login.scala.html
+END
+main.scala.html
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/JAVA/!svn/ver/201/trunk/cab-remittance/app/views/main.scala.html
+END
+error.scala.html
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/JAVA/!svn/ver/117/trunk/cab-remittance/app/views/error.scala.html
+END
+settings.scala.html
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/JAVA/!svn/ver/117/trunk/cab-remittance/app/views/settings.scala.html
+END
+index.scala.html
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/JAVA/!svn/ver/117/trunk/cab-remittance/app/views/index.scala.html
+END

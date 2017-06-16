@@ -1,0 +1,1323 @@
+@(titile: String, user: User, nav: String, blockedRemittanceTransactions: List[SenderReceiverTransaction], rejectedAndApprovedTxs: List[SenderReceiverTransaction], notificationInterval: String, listCurrencies: List[CurrencyExchange] = null)(content: Html)
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<title>@titile</title>
+		<link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.jpg")" />
+		
+		<!-- CSS Bootstrap -->
+		<link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("bootstrap/css/bootstrap.min.css")" />
+		<link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("bootstrap/css/bootstrap-switch.min.css")" />
+		<link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("bootstrap/css/bootstrapValidator.min.css")" />
+		<!-- CSS dataTables -->
+		<link rel="stylesheet" type="text/css" href="@routes.Assets.at("plugins/datatables-1.10.2/media/css/jquery.dataTables.min.css")"/>
+		<link rel="stylesheet" type="text/css" href="@routes.Assets.at("plugins/datatables-1.10.2/media/css/dataTables.bootstrap.css")"/>
+		<!-- CSS datePicker -->
+		<link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("plugins/datepicker/codebase/dhtmlxcalendar.css")" />
+		<!-- CSS Bootstrap Validator -->
+		<link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("bootstrap/css/bootstrapValidator.min.css")" />
+		<!-- CSS Custom -->
+		<link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("stylesheets/main.css")" />
+		<style type="text/css" media="print">
+			html, body {
+				width:210mm; 
+				height:297mm;
+				margin:auto;
+				padding:0;
+			}
+			body{
+				font-size:12px;
+			}
+			.row{
+				display:inline-block;
+				width:100%;
+				vertical-align: top;
+			}
+			.childDiv{
+				width:120mm;
+				float:right;
+			}
+			.childDiv2{
+				width:100mm;
+				float:right;
+			}
+			
+			/* Box1 */
+			.box1-y{margin-top:61mm;}
+			
+			/* Box2 */
+			.box2-y{margin-top:84mm;}
+			
+			/* Box3 */
+			.box3-y{margin-top:127mm;}
+			
+			/* Box4 */
+			.box4-y{margin-top:235mm;}
+			
+			/* Box5 */
+			.box5-y{margin-top:284mm;}
+
+			.childDiv > div{
+				padding:2px 0 0 2px;
+			}
+			.childDiv2 > div > div{
+				display: table-cell; 
+				vertical-align: middle;
+				min-width:45mm;
+				padding-left:2px;
+			}
+		</style>	
+	
+		<!-- jQuery -->
+		<script src="@routes.Assets.at("javascripts/jquery-1.11.1.min.js")"></script>
+		<!-- JS dataTables -->
+		<!-- <script type="text/javascript" language="javascript" src="@routes.Assets.at("plugins/datatables-1.10.2/media/js/jquery.js")" defer></script>-->
+		<script type="text/javascript" language="javascript" src="@routes.Assets.at("plugins/datatables-1.10.2/media/js/jquery.dataTables.min.js")" defer></script>
+		<script type="text/javascript" language="javascript" src="@routes.Assets.at("plugins/datatables-1.10.2/media/js/dataTables.bootstrap.js")" defer></script>
+		<!-- JS Bootstrap Validator -->
+		<script type="text/javascript" src="@routes.Assets.at("bootstrap/js/bootstrapValidator.min.js")" defer></script>
+		<!-- JS datePicker -->
+		<script type="text/javascript" language="javascript" src="@routes.Assets.at("plugins/datepicker/codebase/dhtmlxcalendar.js")" defer></script>
+		
+		<script type="text/javascript" language="javascript" src="@routes.Assets.at("javascripts/fn-utils.js")"></script>
+		
+		<script type="text/javascript" language="javascript">
+			var reviewingRemittanceTxId = 0;
+			$(document).ready(function(){
+				$('#lnkChangePassword').on('click',function(e){
+					e.preventDefault();
+					$('#username').val('@user.getUsername()');
+					$('#modalChangePassword').modal("show");
+				});
+				$('#modalChangePassword').on('hide.bs.modal', function() {
+					$('#frmChangePassword').bootstrapValidator('resetForm', true);
+				});
+				
+			    /* Validate form Change Password and submit */
+			    $('#frmChangePassword').bootstrapValidator({
+			    	excluded: [':disabled', ':hidden', ':not(:visible)'],
+			    	live: 'enabled',
+			    	container: 'tooltip',
+			        feedbackIcons: {
+			            valid: 'glyphicon',
+			            invalid: 'glyphicon',
+			            validating: 'glyphicon glyphicon-refresh'
+			        },
+			        fields: {
+			        	currentPassword: {
+		                    validators: {
+		                    	notEmpty: {
+		                    		message: 'Required'
+		                    	},
+			        			callback: {
+			        				message: 'Your password was incorrect.',
+			    					callback: function(value, validator, $field) {
+			    				    	var currentPassword = $('#currentPassword').val();
+			    				    	if(currentPassword != '@user.getPassword()'){
+			    							return false;
+			    						}else{
+											return true;
+				    					}
+			    					}		        				
+			        			}	                        
+		                    }
+		                },		            
+		                newPassword: {
+		                    validators: {
+		                    	stringLength: {
+		                    		min: 6,
+		                    		message: 'Min is 6 characters long'
+		                    	},
+		                        identical: {
+		                            field: 'confirmNewPassword',
+		                        	message: 'Passwords do not match'
+		                        }	                        
+		                    }
+		                },
+		                confirmNewPassword: {
+		                    validators: {
+		                    	stringLength: {
+		                    		min: 6,
+		                    		message: 'Min is 6 characters long'
+		                    	},
+		                        identical: {
+		                            field: 'newPassword',
+		                        	message: 'Passwords do not match'
+		                        }	                        
+		                    }
+		                }
+			        }
+			    })
+			    .on('success.form.bv', function(e) {
+			    	e.preventDefault();
+					var that = $(this),
+					url = that.attr('action'),
+					type = that.attr('method'),
+					data = {};
+					that.find('[name]').each(function(index, value){
+						var that = $(this),
+							name = that.attr('name'),
+							value = that.val();
+						data[name] = value;
+					});
+					data['updateTime'] = new Date().getTime();
+					$.ajax({
+		       			url: url,
+		       			type: type,
+		       			dataType: 'json',
+		       			data: JSON.stringify(data),
+		       			contentType : "application/json",
+		       			success: function(response) {
+		       				if(response == 'json_expected'){
+					       		$('#pwd-alert-danger').removeClass('hidden');
+				       			setTimeout(function(){
+				       				$('#pwd-alert-danger').addClass('hidden');
+				       			}, 2000);
+						    }else{
+				       			$('#pwd-alert-success').removeClass('hidden');
+				       			setTimeout(function(){
+				       				$('#pwd-alert-success').addClass('hidden');
+					       			$('#modalChangePassword').modal("hide");
+				       			}, 2000);
+				       		}
+			       		},
+			            error: function(jqXHR, textStatus, errorThrown){
+				            bootbox.alert(jqXHR.status + ' : ' + textStatus + ', ' + jqXHR.statusText, function() {});
+			            }
+			       	});
+				    return false;
+			    });
+				
+				<!-- pull notifications for CO -->
+				@if(user.getRole().getCode()=="role_compliance_officer"){	
+					
+					(function workerForCO() {
+						  $.ajax({
+						    url: '@routes.RemittanceController.getNotificationsForCO()', 
+						    type: "get",
+						    success: function(response) {
+							    var blockingTxs = response.result;
+							    
+							    $('#dropdownBlockingTx').html('');
+
+							    var part3 = '';
+							    for(var i=0; i<blockingTxs.length; i++){
+							    	var blockingTx = blockingTxs[i];
+									var reviewButtonId = 'transaction_reviewed-' + blockingTx.id;
+								    var l1 = '<li id="menu-item' + blockingTx.id + '"><a class="pull-right">',
+								    	l2 = blockingTx.reason,
+								    	l3 = '&nbsp;<button type="button" id="' + reviewButtonId + '" class="btn btn-info btn-xs notif-action-button"><span class="glyphicon glyphicon-search"></span> Review</button>',
+									    l4 = '</a></li>';
+									    part3 = part3 + l1 + l2 + l3 + l4;
+								}
+
+								var part1 = '<a class="dropdown-toggle" data-toggle="dropdown" href=""><span class="badge red" id="badgeBlockingTx"></span> Message<b class="caret"></b></a>',
+								    part2 = '<ul class="dropdown-menu dropdown-menu-notif scrollable-menu" role="menu" id="dropdownMenuBlockingTx">',
+								    part4 = '</ul>';
+							    $('#dropdownBlockingTx').append(part1 + part2 + part3 + part4);
+
+							    if(blockingTxs.length > 0){
+							    	$('#badgeBlockingTx').show();
+							    	$('#badgeBlockingTx').html(blockingTxs.length);
+								}else{
+									$('#badgeBlockingTx').hide();
+									$('#dropdownMenuBlockingTx').hide();
+								}
+
+								<!-- prevent closing dropdown when click on dropdown items -->
+							    $('ul.dropdown-menu').click(function(e) {
+								    if($('li.dropdown').hasClass('open')){
+								    	e.stopPropagation();
+									}
+							    });
+
+						    }, /* end success */
+						    complete: function() {
+						      // Schedule the next request when the current one's complete in ms
+						      setTimeout(workerForCO, parseInt(@notificationInterval)*1000);
+						    }
+						  });
+					})();
+					
+					$("button[name=btnApprove]").on("click", function(){
+						var actionButton = $(this);
+						var status = actionButton.attr('id').split('-')[0];
+						var transactionId = actionButton.attr('id').split('-')[1];
+
+						if(status == 'transaction_reviewed'){
+							$('button[name="btnReject"]').attr('id', 'transaction_rejected-' + transactionId);
+							$('button[name="btnApprove"]').attr('id', 'transaction_approved-' + transactionId);
+							reviewingRemittanceTxId = transactionId;
+						}
+						else if(status == 'transaction_rejected' || status == 'transaction_approved'){
+							transactionId = reviewingRemittanceTxId;
+						}
+
+						$.ajax({
+			       			url: '@routes.RemittanceController.updateTransactionStatus()' + '?transactionId=' + transactionId + "&status=" + status,
+			       			type: 'post',
+			       			success: function(response) {
+				       			if(response.response == 'review'){
+			       					preparePopupBeforeEdit(response); 
+			       					$('#popupAddUpdateRemittant').modal("show");
+					       		}
+				       			else if(response.response == 'non-review'){
+				       				$('#popupAddUpdateRemittant').modal("hide");
+				       				$('#menu-item' + transactionId).hide();
+				       				var numMsg = $('#badgeBlockingTx').html().trim();
+			       				   	var updatedNumMsg = parseInt(numMsg)-1;
+			       				 	$('#badgeBlockingTx').html(updatedNumMsg);
+			       				    if(updatedNumMsg==0){
+			       				    	$('#badgeBlockingTx').hide();
+			       				    	$('.dropdown-menu-notif').hide();
+				       				}
+					       		}
+				       		},
+				            error: function(jqXHR, textStatus, errorThrown){
+								bootbox.alert(jqXHR.status + ' : ' + textStatus + ', ' + jqXHR.statusText, function() {});
+				            }
+				       	});
+	       				
+					});
+					
+				} <!-- pull notifications for CO -->
+				
+				@if(user.getRole().getCode()!= "role_teller"){
+					$('#popupAddUpdateRemittant .modal-header :input[type="text"]').attr('disabled', true);
+					$('#popupAddUpdateRemittant .modal-body :input').attr('disabled', true);
+				}
+				
+				<!-- pull notifications for Teller -->
+				@if(user.getRole().getCode()=="role_teller"){	
+					(function workerForTeller() {
+						  $.ajax({
+							url: '@routes.RemittanceController.getNotificationsForTeller()', 
+							type: "get",
+							success: function(response) {
+								var rejectedAndApprovedTxs = response.result;
+								
+								$('#dropdownRejectedApprovedTx').html('');
+
+								var part3 = '';
+								for(var i=0; i<rejectedAndApprovedTxs.length; i++){
+									var rejectedAndApprovedTx = rejectedAndApprovedTxs[i];
+									var reviewButtonId = 'transaction_reviewed-' + rejectedAndApprovedTx.id;
+									var l1 = '<li id="menu-item' + rejectedAndApprovedTx.id + '"><a class="pull-right">';
+									var	l2 = '';
+									if(rejectedAndApprovedTx.transactionStatus == 'transaction_rejected'){
+										l2 = '[Rejected] ' + rejectedAndApprovedTx.reason;
+										l2 = l2 + '&nbsp;<button type="button" id="transaction_blocked-' + rejectedAndApprovedTx.id + '" class="btn btn-success btn-xs notif-action-button"><span class="glyphicon glyphicon-ok"></span> Ok</button>';
+									}
+									else if(rejectedAndApprovedTx.transactionStatus == 'transaction_approved'){
+										l2 = '[Approved] ' + rejectedAndApprovedTx.reason;
+										l2 = l2 + '&nbsp;<button type="button" id="' + rejectedAndApprovedTx.id + '" class="btn btn-success btn-xs continue-tx-button"><span class="glyphicon glyphicon-ok"></span> Ok</button>';
+									}
+									var	l3 = '</a></li>';
+									part3 = part3 + l1 + l2 + l3;
+								}
+
+								var part1 = '<a class="dropdown-toggle" data-toggle="dropdown" href=""><span class="badge red" id="badgeRejectedApprovedTx"></span> Message<b class="caret"></b></a>',
+									part2 = '<ul class="dropdown-menu dropdown-menu-notif scrollable-menu" role="menu" id="dropdownMenuRejectedApprovedTx">',
+									part4 = '</ul>';
+								$('#dropdownRejectedApprovedTx').append(part1 + part2 + part3 + part4);
+
+								if(rejectedAndApprovedTxs.length > 0){
+									$('#badgeRejectedApprovedTx').show();
+									$('#badgeRejectedApprovedTx').html(rejectedAndApprovedTxs.length);
+								}else{
+									$('#badgeRejectedApprovedTx').hide();
+									$('#dropdownMenuRejectedApprovedTx').hide();
+								}
+
+								<!-- prevent closing dropdown when click on dropdown items -->
+								$('ul.dropdown-menu').click(function(e) {
+									if($('li.dropdown').hasClass('open')){
+										e.stopPropagation();
+									}
+								});
+								
+							}, /* end success */
+							complete: function() {
+							  // Schedule the next request when the current one's complete in ms
+							  setTimeout(workerForTeller, parseInt(@notificationInterval)*1000);
+							}
+						  });
+					})();
+					
+					
+					$('.continue-tx-button').click(function(){
+						var txId = $(this).attr('id');
+						if($('#tabReceiver').hasClass('active')){
+							window.location.href = '@routes.RemittanceController.continueTransaction()' + '?continuingTransactionId=' + txId;
+						}else if($('#tabRemittance').hasClass('active')){
+							var requestUrl = '@routes.RemittanceController.getById()' + "?transactionId=" + txId;
+							showModalRemittance(requestUrl, "@user.getRole().getCode()");
+						}
+					});
+					
+					$(".notif-action-button").on("click", function(){
+						var actionButton = $(this);
+						//var status = actionButton.attr('id').split('-')[0];
+						var transactionId = actionButton.attr('id').split('-')[1];
+						$.ajax({
+			       			//url: 'remittance/updateTransactionStatus?remittanceTransactionId=' + transactionId + "&status=transaction_rejected_view",
+			       			url: '@routes.RemittanceController.updateTransactionStatus()' + '?transactionId=' + transactionId + "&status=transaction_rejected_view" ,
+			       			type: 'post',
+			       			success: function(response) {
+				       			// TODO
+				       		},
+				            error: function(jqXHR, textStatus, errorThrown){
+								bootbox.alert(jqXHR.status + ' : ' + textStatus + ', ' + jqXHR.statusText, function() {});
+				            }
+				       	});
+	       				
+					});
+				} <!-- pull notifications for Teller -->
+
+			});	/* end document ready */
+			
+		</script>
+	</head>
+	
+    <body class="container">	
+   		@if(user != null){
+		<div id="dic_bubble" class="selection_bubble fontSize13 noSelect" style="z-index: 9999; border: 1px solid rgb(74, 174, 222); visibility: hidden;"></div>
+		<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+			<div class="container">
+				<div class="navbar-header" style="margin-right:5px;border:solid 1px #fff;">
+				  <a href="@routes.Application.index()"><img alt="" src="@routes.Assets.at("images/logo.jpg")" height="48" width="48"/></a>
+				</div>
+				<div class="navbar-collapse collapse">
+					<ul class="nav navbar-nav">
+			            @if(user.getRole().getCode()=="role_administrator"){
+			            	<li @if(nav=="user"){class="active"}><a href="@routes.UserController.index()">USER</a></li>
+							<li @if(nav=="sender"){class="active"}><a href="@routes.SenderController.index()">SENDER</a></li>
+							<li @if(nav=="receiver"){class="active"}><a href="@routes.ReceiverController.index()">RECEIVER</a></li>
+							<li @if(nav=="remittance"){class="active"}><a href="@routes.RemittanceController.index()">REMITTANCE</a></li>
+							<li @if(nav=="report"){class="active"}><a href="@routes.ReportController.index()">REPORT</a></li>
+			            	<li @if(nav=="rule_fill_amount_managment"){class="active"}><a href="@routes.RuleFillAmountManagementController.index()">RULE FILL AMOUNT</a></li>
+			            }
+			            @if(user.getRole().getCode()=="role_compliance_officer"){
+			            	<li @if(nav=="sender"){class="active"}><a href="@routes.SenderController.index()">SENDER</a></li>
+			            	<li @if(nav=="remittance"){class="active"}><a href="@routes.RemittanceController.index()">REMITTANCE</a></li>
+			            	<li @if(nav=="report"){class="active"}><a href="@routes.ReportController.index()">REPORT</a></li>
+			            }
+			            @if(user.getRole().getCode()=="role_teller"){
+							<li @if(nav=="remittance"){class="active"} id="tabRemittance"><a href="@routes.RemittanceController.index()">REMITTANCE</a></li>
+							<li @if(nav=="receiver"){class="active"} id="tabReceiver"><a href="@routes.ReceiverController.index()">RECEIVER</a></li>
+							<li @if(nav=="report"){class="active"}><a href="@routes.ReportController.index()">REPORT</a></li>				            
+			            }
+			            @if(user.getRole().getCode()=="role_reporter"){
+			            	<li @if(nav=="report"){class="active"}><a href="@routes.ReportController.index()">REPORT</a></li>
+			            	<li @if(nav=="remittance"){class="active"}><a href="@routes.RemittanceController.index()">REMITTANCE</a></li>
+			            }
+					</ul>
+					<ul class="nav navbar-nav navbar-right">
+						<li class="dropdown">
+							<a class="dropdown-toggle"data-toggle="dropdown" href=""><span class="glyphicon glyphicon-user">&nbsp;</span>@user.getFullName()&nbsp;<b class="caret"></b></a>
+							<ul class="dropdown-menu">
+							@if(user != null){
+								<!-- <li><a href="@routes.SettingController.index()"><span class="glyphicon glyphicon-cog">&nbsp;</span>Settings</a></li>-->
+								<li><a href="" id="lnkChangePassword"><span class="glyphicon glyphicon-lock">&nbsp;</span>Change password</a></li>
+								<li class="divider"></li>
+								<li><a href="@routes.LoginController.logout()"><span class="glyphicon glyphicon-off">&nbsp;</span>Sign out</a></li>
+							}
+							</ul>
+						</li>
+					</ul>
+					@if(user.getRole().getCode()=="role_compliance_officer" && blockedRemittanceTransactions != null){
+						<ul class="nav navbar-nav navbar-right">
+							<li class="dropdown" id="dropdownBlockingTx">
+
+							</li>
+						</ul>
+					}
+					@if(user.getRole().getCode()=="role_teller" && rejectedAndApprovedTxs != null){
+						<ul class="nav navbar-nav navbar-right">
+							<li class="dropdown" id="dropdownRejectedApprovedTx">
+
+							</li>
+						</ul>
+					}
+				</div>
+			</div>
+		</div>
+		}
+   	 <!-- contents --> 
+		@content
+     <!-- end contents --> 
+
+	<!-- modal change password-->
+	<div id="modalChangePassword" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalChangePassword" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+					<h4 class="modal-title">Change Password</h4>
+				</div>
+				<form role="form" id="frmChangePassword" action="@routes.SettingController.changePassword()" method="post">
+					<div class="modal-body">
+						<div id="pwd-alert-success" class="alert alert-success hidden" role="alert" alert-dismissable><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Saved successfully</div>
+						<div id="pwd-alert-danger" class="alert alert-danger hidden" role="alert" alert-dismissable><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>JSON expected</div>
+	
+						<div class="row">
+							<div class="col-md-6 form-group">
+								<label class="control-label">Username</label>
+								<input type="text" name="username" id="username" class="form-control" placeholder="username" disabled/>	
+							</div>	
+							<div class="col-md-6 form-group">
+								<label class="control-label">Current password</label>
+								<input type="password" name="currentPassword" id="currentPassword" class="form-control" placeholder="current password"/>
+							</div>		
+						</div>
+						<div class="row">
+							<div class="col-md-6 form-group">
+								<label class="control-label">New password</label>
+								<input type="password" name="newPassword" id="newPassword" class="form-control" placeholder="new password" required/>
+							</div>	
+							<div class="col-md-6 form-group">
+								<label class="control-label">Confirm new password</label>
+								<input type="password" name="confirmNewPassword" id="confirmNewPassword" class="form-control" placeholder="confirm new password" required/>	
+							</div>			
+						</div>
+						
+					</div>
+					<div class="modal-footer">
+						<button id="btnChangePassword" type="submit" class="btn btn-primary">Save</button>
+						<button id="btnCancel" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	<!-- end modal change password-->
+	
+	<!-- Remittance Popup -->
+	@if(listCurrencies != null) {
+		<div id="popupAddUpdateRemittant" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="popupAddUpdateRemittant" data-replace="true" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+  		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<form id="frmRemittance" class="form-horizontal" role="form">
+				<div class="modal-header">
+					<div class="row">
+				  		<div class="col-md-4">
+							<h4 class="modal-title" id="myModalLabel"></h4>
+				  		</div>
+						<div class="col-md-4">
+						  	<label for="txtDateTransaction">Date</label>
+							<input type="text" style="height:25px;width:80%;" class="form-control" id="txtDateTransaction" name="txtDateTransaction" placeholder="Date" value="">
+						</div>
+						<div class="col-md-4">
+							<button type="button" class="close" data-dismiss="modal" id="resetOnClose"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+							<label for="txtBankRef">Bank's Reference No.</label>
+							<input type="text" style="height:25px;width:80%;" class="form-control" id="txtBankRef" name="txtBankRef" placeholder="Bank's Reference No" value="">
+						 </div>
+					</div>
+				</div>
+ 			 <div class="modal-body">
+	 			 <div id="remittance-alert-success" class="alert alert-success hidden" role="alert" alert-dismissable><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Saved successfully</div>
+	 			 <div id="remittance-alert-warning" class="alert alert-warning hidden" role="alert" alert-dismissable><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Receiver exists</div>
+				 <div id="remittance-alert-danger" class="alert alert-danger hidden" role="alert" alert-dismissable><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Error occured!</div>
+ 			 	 <h5>APPLICANT'S DETAILS</h5>
+  				 <div style="padding: 15px; border-color: #ddd;color: #333; background-color: #EAEAEA;border: 1px solid transparent; border-radius: 6px;">
+    			 <div class="form-group row">
+				    <label for="txtFullName" class="col-sm-2 control-label">Full name</label>
+				    <div class="col-sm-6">
+				      <input type="text" class="easyui-combogrid" id="txtFullName" name="txtFullName" style="width:100%"/>
+				    </div>
+				 </div>
+				 <div class="form-group">
+				    <label for="txtAccNumber" class="col-sm-2 control-label">A/C number</label>
+				    <div class="col-sm-6">
+				      <input type="text" class="form-control col-sm-2" id="txtAccNumber" name="txtAccNumber">
+				    </div>
+				 </div>
+				 <div class="form-group">
+				    <label for="txtDOB" class="col-sm-2 control-label">Date of birth</label>
+				    <div class="col-sm-6">
+				    <input type="text" class="form-control col-sm-2" id="txtDOB" name="txtDOB" disabled="disabled">
+				    </div>
+				 </div>
+				 <div class="form-group">
+				    <label for="txtPassportNo" class="col-sm-2 control-label">ID/Passport No</label>
+				    <div class="col-sm-6">
+				      <input type="text" class="form-control col-sm-2" id="txtPassportNo" name="txtPassportNo" disabled="disabled">
+				    </div>
+				 </div>
+				 <div class="form-group">
+				    <label for="txtExpireDate" class="col-sm-2 control-label">Expire date</label>
+				    <div class="col-sm-6">
+				      <input type="text" class="form-control col-sm-2" id="txtExpireDate" name="txtExpireDate" disabled="disabled">
+				      <input type="hidden" id="hidTypeSender" name="hidTypeSender" value=""/>
+				    </div>
+				 </div>
+					<div class="form-group">
+				    <label for="taAddress" class="col-sm-2 control-label">Address</label>
+				    <div class="col-sm-10">
+					<input type="text" class="form-control col-sm-2" id="taAddress" name="taAddress" value="" disabled="disabled"/>
+				    </div>
+				 </div>
+			 </div>
+			 <h5>BENEFICIARY'S DETAILS</h5>
+			 <div style="padding: 15px; border-color: #ddd;color: #333; background-color: #EAEAEA;border: 1px solid transparent; border-radius: 6px;" id="recieverArea">
+    			<div class="form-group">
+				    <label for="txtInterBank" class="col-sm-2 control-label">Inter Bank:</label>
+				    <div class="col-sm-6">
+				      <input type="text" class="form-control col-sm-2" id="txtInterBank" name="txtInterBank">
+				    </div>
+<!-- 				    <div class="col-sm-3"> -->
+<!-- 						<input type="checkbox" name="receiverBlock" class="form-control" data-on-text="Add New" data-off-text="Existing"/> -->
+<!-- 					</div> -->
+				</div>
+				<div class="form-group">
+				    <label for="txtSwiftCode" class="col-sm-2 control-label">Swift Code:</label>
+				    <div class="col-sm-6">
+				      <input type="text" class="form-control col-sm-2" id="txtSwiftCode" name="txtSwiftCode">
+				    </div>
+				</div>
+				<div class="form-group">
+				    <label for="txtBankAddress" class="col-sm-2 control-label">Bank's Address:</label>
+				    <div class="col-sm-6">
+				     <input type="text" class="form-control col-sm-2" id="txtBankAddress" name="txtBankAddress">
+				    </div>
+				</div>
+				<div class="form-group">
+				    <label for="txtRcAccNumber" class="col-sm-2 control-label">A/C Number</label>
+				    <div class="col-sm-6">
+				      <input type="text" class="form-control col-sm-2" id="txtRcAccNumber" name="txtRcAccNumber">
+				    </div>
+				</div>
+				<div class="form-group">
+				    <label for="txtRcFullName" class="col-sm-2 control-label">Full Name</label>
+				    <div class="col-sm-6">
+				      <input type="text" class="easyui-combogrid" id="txtRcFullName" name="txtRcFullName" style="width:100%;"/>
+				    </div>
+			   </div>
+			   <div class="form-group">
+				    <label for="txtRcPurpose" class="col-sm-2 control-label">Purpose</label>
+				    <div class="col-sm-10">
+				      <input type="text" class="form-control col-sm-2" id="txtRcPurpose" name="txtRcPurpose">
+				    </div>
+			  </div>
+			</div>
+			 <h5>FILL AMOUNT</h5>
+  			   
+ 			 <div style="padding: 15px; border-color: #ddd;color: #333; background-color: #EAEAEA;border: 1px solid transparent; border-radius: 6px;">
+ 				<div class="row">
+				  <div class="col-xs-6 col-sm-3 form-group" style="padding-left: 34px;">
+				  	<b>Foreign Amount</b>
+				    <input type="text" class="form-control col-sm-2" id="txtAmount" name="txtAmount" placeholder="0">
+				  </div>
+				  <div class="col-xs-6 col-sm-3">
+				  	<b>Currency</b>
+				  	<select class="form-control" name="selCurrency" id="selCurrency">
+				  	@for(currency <- listCurrencies){
+				  		<option value="@currency.getId()">@currency.getName()</option>
+				  	}
+					</select>
+				  </div>
+				  <div class="col-xs-6 col-sm-3">
+				  	<b>Exchange rate</b>
+				  	<input type="text" class="form-control col-sm-2" id="txtExchangeRate" name="txtExchangeRate">
+				  </div>
+				  <div class="col-xs-6 col-sm-3" style="padding-right: 23px;">
+				  	<b>USD Equivalent</b>
+				  	<div class="form-group">
+<!-- 				  	<div class="input-group"> -->
+				  	<input type="text" class="form-control col-sm-2" id="txtUsdEquivalent" name="txtUsdEquivalent" disabled="disabled">
+<!-- 				  	</div> -->
+				  	</div>
+				  </div>
+				</div>
+				<div class="row">
+				  <div class="col-xs-6 col-sm-3 form-group" style="padding-left: 34px;">
+				  	<b>Fee</b>
+				  	<input type="text" class="form-control col-sm-2" id="txtFee" name="txtFee">
+				  </div>
+				  <div class="col-xs-6 col-sm-3">
+				  	<b>Cable</b>
+				  	<input type="text" class="form-control col-sm-2" id="txtCable" name="txtCable">
+				  </div>
+				  <div class="col-xs-6 col-sm-3">
+				  	<b>Postage</b>
+				  	<input type="text" class="form-control col-sm-2" id="txtPostage" name="txtPostage">
+				  </div>
+				  	<div class="col-xs-6 col-sm-2">
+					  <b>Other</b>
+					  <div class="form-group">
+					    <div class="input-group">
+					      <input type="text" class="form-control col-sm-2" id="txtOther" name="txtOther" value="0">
+					      <div class="input-group-addon" id="divCharge"></div>
+					      <input type="hidden" class="form-control col-sm-2" id="txtCharge" name="txtCharge" placeholder="" value="SHA">
+					    </div>
+					  </div>
+					</div>
+				</div>
+				<div class="form-group">
+				    <label class="col-sm-7 control-label" for="txtTotalAmount">Total USD</label>
+				    <div class="col-sm-5">
+				      <input type="text" name="txtTotalAmount" id="txtTotalAmount" class="form-control col-sm-2" disabled="disabled">
+				    </div>
+			  </div>
+			</div>
+   	 	  </div>
+   	 	  	<div class="modal-footer">
+				<button type="button" name="btnReject" class="btn btn-danger notif-action-button"><span class="glyphicon glyphicon-remove"></span> 
+					@if(user.getRole().getCode()=="role_teller"){Cancel Transaction}
+					@if(user.getRole().getCode()=="role_compliance_officer"){Reject}
+				</button> 
+				<button type="button" name="btnApprove" class="btn btn-success notif-action-button"><span class="glyphicon glyphicon-ok"></span> Approve</button> 
+				@if(user.getRole().getCode()=="role_teller"){
+					<button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-search"></span> Preview</button>
+				}
+				<button type="button" class="btn btn-default" data-dismiss="modal" id="resetButton"><span class="glyphicon glyphicon-off"></span> Close</button>
+				<input type="hidden" name="hidSenderId" value=""/>
+				<input type="hidden" name="hidRemittanceId" id="hidRemittanceId" value=""/>
+				<input type="hidden" name="hidRecieverId" value=""/>
+				<input type="hidden" name="hidProcess" id="hidProcess" value=""/>
+				<input type="hidden" name="hidRcFullName" id="hidRcFullName" value=""/>
+			</div>
+       </form>
+   		</div>
+		</div>
+	</div>
+	<!-- end modal remittance -->
+	
+	<!-- modal remittance application form -->
+		<div id="popupRemittanceApplicationForm" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="popupSaveAndPrint" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+			<div class="modal-dialog">
+				<div class="modal-content">
+				<!-- <div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+					</div> -->
+					<form role="form" id="frmRemittanceApplication" data-toggle="validator" action="javascript:return;" method="post">
+						<div class="modal-body" style="border: solid 1px; padding: 5px 0px; margin:15px;">
+							<div class="row">
+								<div class="col-md-4 form-group" style="padding:0;">
+									<div class="row">
+										<div class="col-sm-3" style="padding: 0 0 0 5px; margin-right:8px;">
+											<center><img src="@routes.Assets.at("images/logo.jpg")" width="60" height="60"/></center>									
+										</div>
+										<div class="col-sm-6" style="padding:0px;font-weight:bold;">
+											<div style="font-size:13px">ធនាគារ កម្ពុជា អាស៊ី</div>
+											<div style="font-size:11px">CAMBODIA ASIA BANK</div>
+										</div>										
+									</div>
+								</div>
+								<div class="col-md-4 form-group">
+									<div style="font-size:17px; font-weight:bold;"><center>ទំរង់បែបបទនៃការផ្ទេរប្រាក់</center></div>
+									<div style="font-size:12px"><center>REMITTANCE APPLICATION FORM</center></div>	
+								</div>	
+								<div class="col-md-3 form-group pull-right" style="padding-right: 0px;margin-bottom:5px;">
+									<div style="font-size:10px">កាលបរិច្ឆេទ Date<br/><input type="text" id="dateTransaction"/></div>
+									<div style="font-size:10px;">លេខសំគាល់ធនាគារ</div>
+									<div style="font-size:10px">Bank's Reference No.:<br/><input type="text" id="bankRef"/></div>
+								</div>									
+							</div>
+							<div class="row wrapped">
+								<hr style="margin:0 0 4px 0;"/>
+							</div>
+							<div class="row">
+								<div class="col-md-2 col-padding">
+									<div style="font-size:10px; margin-top:5px;">ទំរង់បែបបទសំរាប់</div>
+									<div style="font-size:9px">Application For:</div>
+								</div>
+								<div class="col-md-3 form-group" style="padding-left:0;">
+									<div class="checkbox pull-left" style="margin:0 0 5px 0;display:block;">
+										<label>
+											<input type="checkbox" name="chkDemandDraft" value="chkDemandDraft" style="margin-top:0;"/>
+											<div style="font-size:10px;">ប័ណ្ណធនាគារត្រូវសងប្រាក់</div>
+										</label>
+										<div style="font-size:9px; margin-left:20px;">Demand Draft</div>
+									</div>
+								</div>
+								<div class="col-md-3 form-group">
+									<div class="checkbox pull-left" style="margin-top:0;">
+										<label>
+											<input type="checkbox" name="chkCashierOrder" value="chkCashierOrder" style="margin-top:0;"/>
+											<div style="font-size:10px">មូលប្បទានប័ត្រធនាគារ</div>
+										</label>
+										<div style="font-size:9px; margin-left:20px;">Cashier's Order</div>
+									</div>
+								</div>
+								<div class="col-md-4 form-group" style="padding-right:0;">
+									<div class="checkbox pull-left" style="margin-top:0;">
+										<label>
+											<input type="checkbox" name="chkSwift" value="chkSwift" style="margin-top:0;"/>
+											<div style="font-size:10px">ផ្ទេរប្រាក់តាមទូរលេខ</div>
+										</label>
+										<div style="font-size:9px; margin-left:20px; position:relative;">Telegraphic Transfer/Swift</div>
+									</div>									
+								</div>
+							</div>
+							<div class="row form-content tborder">
+								<div class="col-md-12 form-group grey">
+									រូបិយប័ណ្ណ និង ចំនួនត្រូវផ្ទេរ  &nbsp;&nbsp;CURRENCY & AMOUNT
+								</div>
+							</div>
+							<div class="row form-content tborder">
+								<div class="col-md-4 form-group grey rborder">
+									ជាលេខ  &nbsp;&nbsp;In Figures
+								</div>	
+								<div class="col-md-1 form-group grey rborder">
+									<center>32A</center>
+								</div>
+								<div class="col-md-7 form-group" id="divInFigure">
+									
+								</div>									
+							</div>	
+							<div class="row form-content tborder double">
+								<div class="col-md-4 form-group grey rborder">
+									ជាអក្សរ &nbsp;&nbsp;In Words
+								</div>	
+								<div class="col-md-1 form-group grey rborder">
+									<center></center>
+								</div>
+								<div class="col-md-7 form-group" id="divInWord">
+									
+								</div>									
+							</div>
+							<div class="row form-content tborder">
+								<div class="col-md-12 form-group grey">
+									ពត័មានពីអ្នកស្នើសុំ  &nbsp;&nbsp;APPLICANT'S DETAILS
+								</div>
+							</div>
+							<div class="row form-content tborder">
+								<div class="col-md-4 form-group grey rborder">
+									ឈ្មោះ &nbsp;&nbsp;Applicant's Name
+								</div>	
+								<div class="col-md-1 form-group grey rborder">
+									<center>50</center>
+								</div>
+								<div class="col-md-7 form-group" id="senderfullName"></div>									
+							</div>								
+							<div class="row form-content tborder double">
+								<div class="col-md-4 form-group grey rborder" style="height:100%;">
+									អាសយដ្ឋាន និង លេខទូរស័ព្ទ &nbsp;&nbsp;Address & Tel No.
+								</div>	
+								<div class="col-md-1 form-group grey rborder">
+									<center></center>
+								</div>
+								<div class="col-md-7 form-group" id="senderaddress"></div>									
+							</div>					
+							<div class="row form-content tborder">
+								<div class="col-md-4 form-group grey rborder">
+									លេខគណនី &nbsp;&nbsp;Account Number
+								</div>	
+								<div class="col-md-1 form-group grey rborder">
+									<center>&nbsp;</center>
+								</div>
+								<div class="col-md-7 form-group" id="senderaccountNo">
+									
+								</div>									
+							</div>						
+							<div class="row form-content tborder">
+								<div class="col-md-4 form-group grey rborder">
+									ថ្ងៃខែឆ្នាំកំនើត &nbsp;&nbsp;Date of Birth
+								</div>	
+								<div class="col-md-1 form-group grey rborder">
+									<center>&nbsp;</center>
+								</div>
+								<div class="col-md-7 form-group" id="senderdateOfBirth">
+									
+								</div>									
+							</div>	
+							<div class="row form-content tborder">
+								<div class="col-md-4 form-group grey rborder">
+									លេខអត្តសញ្ញាណប័ណ្ណ រឺ លិខិតឆ្លងដែន  &nbsp;&nbsp;ID or Passport No.
+								</div>	
+								<div class="col-md-1 form-group grey rborder">
+									<center>&nbsp;</center>
+								</div>
+								<div class="col-md-7 form-group" id="senderidentityNumber">
+									
+								</div>									
+							</div>							
+							<div class="row form-content tborder">
+								<div class="col-md-12 form-group grey">
+									ពត័មានពីអ្នកទទួលផល &nbsp;&nbsp;BENEFICIARY'S DETAILS
+								</div>
+							</div>							
+							<div class="row form-content tborder">
+								<div class="col-md-4 form-group grey rborder">
+									ធនាគារកណ្តាល &nbsp;&nbsp;Intermediary Bank
+								</div>	
+								<div class="col-md-1 form-group grey rborder">
+									<center>56</center>
+								</div>
+								<div class="col-md-7 form-group" id="receiverintermediaryBank">
+									
+								</div>									
+							</div>							
+							<div class="row form-content tborder semi-double">
+								<div class="col-md-4 form-group grey rborder">
+									ធនាគារទទួលផល  &nbsp;&nbsp;Beneficiary's Bank/SWIFT Code
+									អាសយដ្ឋានធនាគារទទួលផល &nbsp;&nbsp;Bank's Address
+								</div>	
+								<div class="col-md-1 form-group grey rborder">
+									<center>57</center>
+								</div>
+								<div class="col-md-7 form-group" id="receiverswiftCode">
+									
+								</div>									
+							</div>							
+							<div class="row form-content tborder">
+								<div class="col-md-4 form-group grey rborder">
+									លេខគណនីអ្នកទទួលផល &nbsp;&nbsp;Beneficiary's Account No.
+								</div>	
+								<div class="col-md-1 form-group grey rborder">
+									<center>59</center>
+								</div>
+								<div class="col-md-7 form-group" id="receiveraccountNo">
+									
+								</div>									
+							</div>
+							<div class="row form-content tborder">
+								<div class="col-md-4 form-group grey rborder">
+									ឈ្មោះអ្នកទទួលផល &nbsp;&nbsp;Beneficiary's Name
+								</div>	
+								<div class="col-md-1 form-group grey rborder">
+									<center>&nbsp;</center>
+								</div>
+								<div class="col-md-7 form-group" id="receiverfullName">
+									
+								</div>									
+							</div>
+							<div class="row form-content tborder">
+								<div class="col-md-4 form-group grey rborder">
+									គោលបំណងនៃការផ្ទេរ &nbsp;&nbsp;Purpose of Transfer
+								</div>	
+								<div class="col-md-1 form-group grey rborder">
+									<center>70</center>
+								</div>
+								<div class="col-md-7 form-group" id="receiverpurpose">
+									
+								</div>									
+							</div>							
+							<div class="row form-content tborder">
+								<div class="col-md-12 form-group grey">
+									វិធីទូទាត់ &nbsp;&nbsp;MODE OF PAYMENT
+								</div>
+							</div>							
+							
+							<div class="row form-content tborder" style="padding-top: 5px;">
+								<div class="col-md-6 form-group">
+									<div class="checkbox" style="margin-top:0;">
+										<label>
+											<input type="checkbox" name="chkCash" value="chkCash" style="margin-top:0;"/>
+											<div style="font-size:10px">សាច់ប្រាក់ &nbsp;Cash</div>
+										</label>
+									</div>
+									<div class="checkbox" style="margin-top:0;">
+										<label>
+											<input type="checkbox" name="chkCheque" value="chkCheque" style="margin-top:0;"/>
+											<div style="font-size:10px">លេខមូលប្បទានប័ត្រ &nbsp;Cheque No.</div>
+										</label>
+									</div>
+									<div class="checkbox" style="margin-top:0;">
+										<label>
+											<input type="checkbox" name="chkAuthorizeDebit" value="chkAuthorizeDebit" style="margin-top:0;"/>
+											<div style="font-size:10px">យើងសូមប្រគល់សិទ្ធិជូនធនាគារដកទឹកប្រាក់ពីគណីលេខ</div>
+										</label>
+										<div style="font-size:9px; margin-left:20px;">I / We authorize the Bank to debit my / our account no.:</div>
+										<br/>
+										<div style="font-size:9px; margin-left:20px;">...............................................................................</div>
+									</div>									
+								</div>
+								<div class="col-md-6 form-group lborder">
+									<div class="row double"></div>
+									<div class="row double"></div>
+									<div class="row">
+										<div class="col-sm-6 form-group">
+											<div style="font-size:9px;">............................................................................</div>
+											ហត្ថលេខា រឺត្រារបស់អ្នកស្នើសុំ &nbsp;&nbsp;Applicant's Stamp/ Signature
+										</div>
+										<div class="col-sm-3 form-group pull-right">
+											Signature Verified
+										</div>										
+									</div>
+								</div>
+							</div>
+							<div class="row form-content tborder">
+								<div class="col-md-12 form-group">
+									&nbsp;
+								</div>
+							</div>	
+							<div class="row form-content tborder">
+								<div class="col-md-12 form-group">
+									<center>បែបបទនេះមានសុពលភាពលុះត្រាតែមានចុះហត្ថលេខាដោយមន្ត្រីរបស់ធនាគារ &nbsp;&nbsp;This application is only valid when signed by Bank's authorised officer/s</center>
+								</div>
+							</div>								
+							<div class="row form-content tborder">
+								<div class="col-md-12 form-group grey">
+									សំរាប់ធនាគារ &nbsp;&nbsp;FOR BANK USE ONLY
+								</div>
+							</div>	
+							<div class="row form-content tborder">
+								<div class="col-md-1 form-group grey rborder">
+									<center>100 x</center>
+								</div>
+								<div class="col-md-2 form-group">
+									
+								</div>
+								<div class="col-md-2 form-group grey rborder lborder">
+									Foreign Amount
+								</div>
+								<div class="col-md-3 form-group" id="amount">
+									
+								</div>
+								<div class="col-md-2 form-group grey rborder lborder">
+									Contract No
+								</div>
+								<div class="col-md-2 form-group">
+									
+								</div>								
+							</div>							
+							<div class="row form-content tborder">
+								<div class="col-md-1 form-group grey rborder">
+									<center>50 x</center>
+								</div>
+								<div class="col-md-2 form-group">
+									
+								</div>
+								<div class="col-md-2 form-group grey rborder lborder">
+									Exchange Rate
+								</div>
+								<div class="col-md-3 form-group" id="exchangeAmount">
+									
+								</div>
+								<div class="col-md-2 form-group grey rborder lborder">
+									Msg Prepare
+								</div>
+								<div class="col-md-2 form-group">
+									
+								</div>								
+							</div>
+							<div class="row form-content tborder">
+								<div class="col-md-1 form-group grey rborder">
+									<center>20 x</center>
+								</div>
+								<div class="col-md-2 form-group">
+									
+								</div>
+								<div class="col-md-2 form-group grey rborder lborder">
+									USD Equivalent
+								</div>
+								<div class="col-md-3 form-group" id="usdEquivalent">
+									
+								</div>
+								<div class="col-md-2 form-group grey rborder lborder">
+									Msg Check
+								</div>
+								<div class="col-md-2 form-group">
+									
+								</div>								
+							</div>
+							<div class="row form-content tborder">
+								<div class="col-md-1 form-group grey rborder">
+									<center>10 x</center>
+								</div>
+								<div class="col-md-2 form-group">
+									
+								</div>
+								<div class="col-md-2 form-group grey rborder lborder">
+									Fee
+								</div>
+								<div class="col-md-3 form-group" id="fee">
+									
+								</div>
+								<div class="col-md-2 form-group grey rborder lborder">
+									Msg Counter Check
+								</div>
+								<div class="col-md-2 form-group">
+									
+								</div>								
+							</div>
+							<div class="row form-content tborder">
+								<div class="col-md-1 form-group grey rborder">
+									<center>5 x</center>
+								</div>
+								<div class="col-md-2 form-group">
+									
+								</div>
+								<div class="col-md-2 form-group grey rborder lborder">
+									Cable
+								</div>
+								<div class="col-md-3 form-group" id="cable">
+									
+								</div>
+								<div class="col-md-2 form-group grey rborder lborder">
+									Receiving Bank
+								</div>
+								<div class="col-md-2 form-group">
+									
+								</div>								
+							</div>
+							<div class="row form-content tborder">
+								<div class="col-md-1 form-group grey rborder">
+									<center>1 x</center>
+								</div>
+								<div class="col-md-2 form-group">
+									
+								</div>
+								<div class="col-md-2 form-group grey rborder lborder">
+									Postage
+								</div>
+								<div class="col-md-3 form-group" id="postage">
+									
+								</div>
+								<div class="col-md-2 form-group grey rborder lborder">
+									Charges
+								</div>
+								<div class="col-md-2 form-group">
+									<center><b id="charge"></b></center>
+								</div>								
+							</div>
+							<div class="row form-content tborder">
+								<div class="col-md-1 form-group grey rborder">
+									<center>Total Cash</center>
+								</div>
+								<div class="col-md-2 form-group" id="totalAmount">
+									
+								</div>
+								<div class="col-md-2 form-group grey rborder lborder">
+									Other
+								</div>
+								<div class="col-md-3 form-group" id="other">
+									
+								</div>
+								<div class="col-md-2 form-group grey rborder lborder">
+									&nbsp;
+								</div>
+								<div class="col-md-2 form-group">
+									
+								</div>								
+							</div>
+							<div class="row form-content tborder bborder">
+								<div class="col-md-1 form-group grey rborder">
+									<center>Teller's Initial</center>
+								</div>
+								<div class="col-md-2 form-group">
+									
+								</div>
+								<div class="col-md-2 form-group grey rborder lborder">
+									TOTAL USD
+								</div>
+								<div class="col-md-3 form-group" id="totalUsd">
+									
+								</div>
+								<div class="col-md-2 form-group grey rborder lborder">
+									&nbsp;
+								</div>
+								<div class="col-md-2 form-group">
+									
+								</div>								
+							</div>							
+							<div class="row form-content double">
+								<div class="col-md-12 form-group"></div>
+							</div>	
+							<div class="row form-content">
+								<div class="col-md-1 form-group"></div>
+								<div class="col-md-7 form-group">
+									<center>ការអនុម័តដោយមន្ត្រីធនាគារ &nbsp;&nbsp;Officer's Authorization</center>
+								</div>
+								<div class="col-md-4 form-group" style="text-align:right;padding-right:10px;">
+									Additional Instructions / Remarks
+								</div>								
+							</div>								
+						</div>
+						<div class="modal-footer">
+							<button id="btnSaveAndPrint" type="submit" class="btn btn-primary">Save/Print</button>
+							<button id="btnCancelSaveAndPrint" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+		<!-- end modal remittance transaction -->
+
+		<!-- printable modal -->
+		<div id="printableRemittanceApplicationForm">
+			<div id="printableContent" class="modal">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-body">
+							<div class="row" style="position:absolute;margin-top:17mm;text-align:right;">
+								<div id="pdateTransaction" style="margin-right:20mm"></div>
+							</div>
+							<div class="row" style="position:absolute;margin-top:33mm;text-align:right;">	
+								<div id="pbankRef" style="margin-right:10mm"></div>									
+							</div>
+							
+							<!-- Box1 -->
+							<div class="box1-y" style="position:absolute;">
+								<div class="row">
+									<div class="childDiv">
+										<div id="pdivInFigure" style="height:5mm;">&nbsp;</div>
+									</div>
+								</div>
+								<div class="row">
+									<div class="childDiv">
+										<div id="pdivInWord" style="height:11mm;">&nbsp;</div>
+									</div>
+								</div>
+								<div style="clear:both;"></div>								
+							</div>
+							
+							<!-- Box2 -->
+							<div class="box2-y" style="position:absolute;">
+								<div class="row">
+									<div class="childDiv">
+										<div id="psenderfullName" style="height:6mm;">&nbsp;</div>
+									</div>
+								</div>							
+								<div class="row">
+									<div class="childDiv">
+										<div id="psenderaddress" style="height:13mm; word-wrap:break-word; overflow:hidden;">&nbsp;</div>
+									</div>							
+								</div>					
+								<div class="row">
+									<div class="childDiv">
+										<div id="psenderaccountNo" style="height:6mm;">&nbsp;</div>
+									</div>								
+								</div>						
+								<div class="row">
+									<div class="childDiv">
+										<div id="psenderdateOfBirth" style="height:6mm;">&nbsp;</div>
+									</div>								
+								</div>	
+								<div class="row">
+									<div class="childDiv">
+										<div id="psenderidentityNumber" style="height:5mm;vertical-align:top;">&nbsp;</div>
+									</div>							
+								</div>	
+								<div style="clear:both;"></div>								
+							</div>
+							
+							<!-- Box3 -->	
+							<div class="box3-y" style="position:absolute;">
+								<div class="row">
+									<div class="childDiv">
+										<div id="preceiverintermediaryBank" style="height:5mm;">&nbsp;</div>
+									</div>							
+								</div>							
+								<div class="row">
+									<div class="childDiv">
+										<div id="preceiverswiftCode" style="height:14mm;">&nbsp;</div>
+									</div>							
+								</div>							
+								<div class="row">
+									<div class="childDiv">
+										<div id="preceiveraccountNo" style="height:6mm;">&nbsp;</div>
+									</div>							
+								</div>
+								<div class="row">
+									<div class="childDiv">
+										<div id="preceiverfullName" style="height:10mm;">&nbsp;</div>
+									</div>							
+								</div>
+								<div class="row">
+									<div class="childDiv">
+										<div id="preceiverpurpose" style="height:10mm;">&nbsp;</div>
+									</div>							
+								</div>
+								<div style="clear:both;"></div>								
+							</div>						
+
+							<!-- Box4 -->
+							<div class="box4-y" style="position:absolute;">
+								<div class="row">
+									<div class="childDiv2">
+										<div style="width:185px">
+											<div id="pamount" style="height:5mm;">&nbsp;</div>
+										</div>
+									</div>
+								</div>
+								<div class="row">
+									<div class="childDiv2">
+										<div style="width:185px">
+											<div id="pexchangeAmount" style="height:5mm;">&nbsp;</div>
+										</div>
+									</div>							
+								</div>
+								<div class="row">	
+									<div class="childDiv2">
+										<div style="width:185px">
+											<div id="pusdEquivalent" style="height:5mm;">&nbsp;</div>
+										</div>
+									</div>							
+								</div>
+								<div class="row">	
+									<div class="childDiv2">
+										<div style="width:185px">
+											<div id="pfee" style="height:5mm;">&nbsp;</div>
+										</div>
+									</div>							
+								</div>
+								<div class="row">
+									<div class="childDiv2">
+										<div style="width:185px">
+											<div id="pcable" style="height:5mm;">&nbsp;</div>
+										</div>
+									</div>					
+								</div>
+								<div class="row">
+									<div class="childDiv2">
+										<div style="width:185px">
+											<div id="ppostage" style="height:4.5mm;">&nbsp;</div>
+										</div>
+									</div>							
+								</div>
+								<div class="row">
+									<div class="childDiv2">
+										<div style="width:45mm;float:left;">
+											<div id="pother" style="height:6mm;">&nbsp;</div>
+										</div>
+										<div style="width:28mm;float:left;">&nbsp;</div>
+										<div id="pcharge" style="display:table-cell;vertical-align:middle;text-align:center;width:20mm;height:6mm;">&nbsp;</div>
+										<div style="clear:both;"></div>								
+									</div>							
+								</div>
+								<div class="row">
+									<div class="childDiv2">
+										<div style="width:185px">
+											<div id="ptotalUsd" style="height:7mm;">&nbsp;</div>
+										</div>
+									</div>
+								</div>
+								<div style="clear:both;"></div>								
+							</div>
+
+							<!-- Box5 -->
+							<div class="box5-y" style="position:absolute;">
+								<div class="row">	
+									<div style="padding-left:57px;">
+										<span style="float:left;">User:&nbsp;</span><div id="puser" style="width:100px;">&nbsp;</div>
+									</div>						
+								</div>							
+							</div>
+							<div style="clear:both;"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- end printable modal -->
+
+	}
+ 
+      <!-- footer -->
+      @if(user != null){
+		<div class="footer navbar-fixed-bottom">
+			<center><p>© 2014 Cambodia Asia Bank Ltd</p></center>
+		</div>
+	  }
+	  <!-- end footer -->
+		
+    </body>
+
+</html>

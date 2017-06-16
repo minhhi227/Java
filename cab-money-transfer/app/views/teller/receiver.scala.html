@@ -1,0 +1,299 @@
+@(user: User, nav: String, rejectedAndApprovedTxs: List[SenderReceiverTransaction], notificationInterval: String, listCurrencies: List[CurrencyExchange])
+
+@main("RECEIVER", user, nav, null, rejectedAndApprovedTxs, notificationInterval, listCurrencies) {
+
+	<div class="content-wrapper">
+		<div class="page-header"><h3>List receiver</h3></div>
+		<table id="tbReceiver" class="display cell-border compact" cellspacing="0" width="100%">
+			<thead>
+				<tr>
+					<th>N&deg;</th>
+					<th>ID</th>
+					<th>Full name</th>
+					<th>Account No.</th>
+					<th>Intermediary Bank</th>
+					<th>Swift Code</th>
+					<th>Bank Address</th>
+				</tr>
+			</thead>
+			<tbody></tbody>
+		</table>
+	</div>
+
+<!-- pop up create or update receiver -->
+<div id="popupAddEditReceiver" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="popupAddEditReceiver" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+				<h4 class="modal-title" id="popupAddEditSenderTitle">Create Receiver</h4>
+			</div>
+			<form role="form" id="frmReceiver" action="@routes.ReceiverController.saveOrUpdateReceiver()" method="post">
+				<div class="modal-body">
+					<input type="hidden" name="receiverId" id="receiverId" value="0"/>
+					<div id="receiver-alert-success" class="alert alert-success hidden" role="alert" alert-dismissable><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Saved successfully</div>
+					<div id="receiver-alert-warning" class="alert alert-warning hidden" role="alert" alert-dismissable><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Receiver with this account no. already exists</div>
+					<div id="receiver-alert-danger" class="alert alert-danger hidden" role="alert" alert-dismissable><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>JSON expected</div>
+					<div class="row"> <!-- Row 1 -->
+						<div class="col-md-6 form-group">
+							<label class="control-label">Intermediary bank</label>
+							<input type="text" name="receiverIntermediaryBank" class="form-control" placeholder="intermediary bank" required/>
+						</div>
+						<div class="col-md-6 form-group">
+							<label class="control-label">Swift code</label>
+							<input type="text" name="receiverSwiftCode" class="form-control" placeholder="swift code" required/>
+						</div>
+					</div>
+					<div class="row"> <!-- Row 2 -->
+						<div class="col-md-6 form-group">
+							<label class="control-label">Account No.</label>
+							<input type="text" name="receiverAccountNo" class="form-control" placeholder="account no." required/>
+						</div>
+						<div class="col-md-6 form-group">
+							<label class="control-label">Full name</label>
+							<input type="text" name="receiverFullName" class="form-control" placeholder="full name" required/>
+						</div>
+					</div>
+					<div class="row"> <!-- Row 3 -->
+						<div class="col-md-12">
+							<label>Bank address</label>
+							<textarea name="receiverBankAddress" class="form-control" rows="2" placeholder="bank address"></textarea>	
+						</div>		
+					</div>
+<!-- 					<div class="row"> Row 4 -->
+<!-- 						<div class="col-md-12"> -->
+<!-- 							<label>Purpose</label> -->
+<!-- 							<textarea name="receiverPurpose" class="form-control" rows="2" placeholder="purpose"></textarea>	 -->
+<!-- 						</div>		 -->
+<!-- 					</div> -->
+				</div>
+				<div class="modal-footer">
+					<button id="btnSaveReceiver" type="submit" class="btn btn-primary">Save</button>
+					<button id="btnCancel" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+<!-- end pop up create or update receiver -->
+
+	<!-- pop up receiver advanced search view -->
+	<div id="popupAdvancedSearchReceiver" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="popupAdvancedSearchReceiver" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+					<h4 class="modal-title" id="popupAddEditReceiverTitle">Advanced Search</h4>
+				</div>
+				<form role="form" id="frmAdvancedSearchReceiver" data-toggle="validator">
+					<div class="modal-body">
+						<div class="row"> <!-- Row 1 -->
+							<div class="col-md-6">
+								<label>Intermediary Bank</label>
+								<input type="text" name="searchIntermidiary" class="form-control" placeholder="any..."/>
+							</div>
+							<div class="col-md-6">
+								<label>Swift Code</label>
+								<input type="text" name="searchSwiftCode" class="form-control" placeholder="any..."/>
+							</div>
+						</div>
+						<div class="row"> <!-- Row 2 -->
+							<div class="col-md-6">
+								<label>Account No.</label>
+								<input type="text" name="searchAccountNumber" class="form-control" placeholder="any..."/>
+							</div>
+							<div class="col-md-6">
+								<label>Full name</label>
+								<input type="text" name="searchFullName" class="form-control" placeholder="any..."/>
+							</div>
+						</div>
+<!--						<div class="row">  Row 3 -->
+<!--							<div class="col-md-12">-->
+<!--								<label>Bank Address</label>-->
+<!--								<input type="text" name="searchBankAddress" class="form-control" placeholder="any..."/>-->
+<!--							</div>					-->
+<!--						</div>	-->
+					</div>
+					<div class="modal-footer">
+						<button id="btnSearchReceiver" type="button" class="btn btn-primary">Search</button>
+						<button id="btnCancel" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	<!-- end pop up sender advanced search view -->
+
+	<!-- jQuery -->
+	<script type="text/javascript" language="javascript" src="@routes.Assets.at("plugins/datatables-1.10.2/media/js/jquery.js")"></script>
+	<script type="text/javascript" language="javascript" src="@routes.Assets.at("plugins/datatables-1.10.2/media/js/jquery.dataTables.min.js")"></script>
+	<script type="text/javascript" language="javascript" src="@routes.Assets.at("plugins/datatables-1.10.2/fnReloadAjax.js")"></script>
+	<script type="text/javascript" language="javascript" src="@routes.Assets.at("plugins/datatables-1.10.2/fnFilterClear.js")"></script>
+	<!-- JS Bootstrap -->		
+	<script type="text/javascript" src="@routes.Assets.at("bootstrap/js/bootstrap.min.js")" defer></script>
+	<script type="text/javascript" language="javascript">
+		var colNo = 0;
+		var colId = 1;
+		var colFullName = 2; 
+		var colAccountNo = 3;
+		var colIntermediaryBank = 4;
+		var colSwiftCode = 5; 
+		var colBankAddress = 6;				
+			
+		$(document).ready(function() {
+			/*
+			* dataTables : tbReceiver
+			*/
+			var tbReceiver = $('#tbReceiver').dataTable({
+				columnDefs: [ 
+					{targets:[colNo], sortable:false, searchable:false},
+					{targets:[colId], visible:false, searchable:false}
+				],
+	            processing: true,
+	            serverSide: true,
+	            stateSave: true,	
+				pagingType: "full_numbers",
+				deferLoading: 0,
+				displayLength: 10,
+	            ajaxSource: "@routes.ReceiverController.filterReceiver()",
+				dom: 'l<"toolbar">rtip',
+				fnServerParams: function (aoData) {
+					$frmReceiverInputWithValue = $("#frmAdvancedSearchReceiver").find('input[type="text"][value!=""],input[type="radio"]:checked,input[type="checkbox"]:checked,textarea[value!=""],select[value!=""]');
+					$frmReceiverInputWithValue.each(function () {
+		                var that = $(this), value = that.val();
+		                if (typeof value === "string") {
+		                	aoData.push({ "name": that.attr("name"), "value": value });
+		                }
+		                else if (Object.prototype.toString.apply(value) === '[object Array]') {
+		                    // for multi select because it has an array of selected values
+		                    var i;
+		                    for (i = 0; i < value.length; i++) {
+		                    	aoData.push({ "name": that.attr("name"), "value": value[i] });
+		                    }
+		                }
+		          	});
+			    },
+				fnRowCallback: function( nRow, aData, iDisplayIndex, iDisplayIndexFull ) {
+					$('td', nRow).on('dblclick', function() { 
+						preparePopupBeforeEditReceiver(aData); 
+						$('#popupAddEditReceiver').modal("show");
+					});
+				}
+			});
+			
+			$("div.toolbar").append('&nbsp;<a id="btnAddReceiver" class="btn btn-primary">Add</a>');
+			$('div.toolbar').append('<a data-toggle="modal" class="btn btn-primary pull-right col-margin-right" data-target="#popupAdvancedSearchReceiver">Advanced Search</a>');
+			$('div.toolbar').append('<a id="btnClearSearch" href="#" class="btn btn-primary pull-right col-margin-right">Clear Search</a>');
+
+			$("#btnClearSearch").click(function () {
+// 				tbReceiver.fnFilterClear();
+				tbReceiver.fnReloadAjax("@routes.ReceiverController.filterReceiver()");
+	        });
+			
+			$("#btnSearchReceiver").click(function () {
+				tbReceiver.fnReloadAjax("@routes.ReceiverController.filterReceiver()" + "?" + $("#frmAdvancedSearchReceiver").serialize());
+				$('#popupAdvancedSearchReceiver').modal("hide");
+	        });
+
+			function preparePopupBeforeEditReceiver(dr){
+				$('#popupAddEditReceiverTitle').html('Edit Receiver');
+				$('#btnSaveReceiver').html('Update');
+				
+				$('#receiverId').val(dr[colId]);
+				$("input[name='receiverIntermediaryBank']").val(dr[colIntermediaryBank]);
+				$("input[name='receiverSwiftCode']").val(dr[colSwiftCode]);
+				$("input[name='receiverAccountNo']").val(dr[colAccountNo]);
+				$("input[name='receiverFullName']").val(dr[colFullName]);
+				$("textarea[name='receiverBankAddress']").val(dr[colBankAddress]);
+			}
+			
+			$('#btnAddReceiver').click(function(){
+				preparePopupBeforeAddReceiver();
+				$('#popupAddEditReceiver').modal("show");
+			});
+
+			function preparePopupBeforeAddReceiver(){
+				clearPopupControls();
+				$('#popupAddEditReceiverTitle').html('Create Receiver');
+				$('#btnSaveReceiver').html('Save');
+			}
+
+			function clearPopupControls(){
+				$('#receiverId').val('0');
+				$("input[name='receiverIntermediaryBank']").val('');
+				$("input[name='receiverSwiftCode']").val('');
+				$("input[name='receiverAccountNo']").val('');
+				$("input[name='receiverFullName']").val('');
+				$("textarea[name='receiverBankAddress']").val('');
+			}
+
+			$('#popupAddEditReceiver').on('hide.bs.modal', function () {
+				$('#frmReceiver').bootstrapValidator('resetForm', true);
+			})
+			
+		    /* Validate form Receiver and submit */
+		    $('#frmReceiver').bootstrapValidator({
+		    	excluded: [':disabled', ':hidden', ':not(:visible)'],
+		    	live: 'enabled',
+		    	container: 'tooltip',
+		        feedbackIcons: {
+		            valid: 'glyphicon',
+		            invalid: 'glyphicon',
+		            validating: 'glyphicon glyphicon-refresh'
+		        }
+		    })
+		    .on('success.form.bv', function(e) {
+		    	e.preventDefault();
+				var that = $(this),
+				url = that.attr('action'),
+				type = that.attr('method'),
+				data = {};
+				that.find('[name]').each(function(index, value){
+					var that = $(this),
+						name = that.attr('name'),
+						value = that.val();
+					if(that.attr('type') != null && that.attr('type')=='checkbox'){
+						data[name] = that.prop('checked');
+					}else{
+						data[name] = value;
+					}
+				});
+				data['updateTime'] = new Date().getTime();
+				$.ajax({
+	       			url: url,
+	       			type: type,
+	       			dataType: 'json',
+	       			data: JSON.stringify(data),
+	       			contentType : "application/json",
+	       			success: function(response) {
+	       				if(response == 'receiver_exists'){
+	       					$('#receiver-alert-warning').removeClass('hidden');
+			       			setTimeout(function(){
+			       				$('#receiver-alert-warning').addClass('hidden');
+			       			}, 3000);
+				       	}else if(response == 'json_expected'){
+				       		$('#receiver-alert-danger').removeClass('hidden');
+			       			setTimeout(function(){
+			       				$('#receiver-alert-danger').addClass('hidden');
+			       			}, 3000);
+					    }else{
+					    	tbReceiver.fnReloadAjax();
+			       			$('#receiver-alert-success').removeClass('hidden');
+					    	$("#receiver-alert-success").slideDown("slow");
+							window.setTimeout(function(){$("#receiver-alert-success").slideUp("slow");},2000);
+							$('#frmReceiver').data('bootstrapValidator').resetForm();
+							$('#frmReceiver').find('input,textarea').val("");
+			       		}
+		       		},
+		            error: function(jqXHR, textStatus, errorThrown){
+		            	bootbox.alert(jqXHR.status + ' : ' + textStatus + ', ' + jqXHR.statusText, function() {});
+		            }
+		       	});
+	       		return false;
+		    });
+		    
+		}); /* end document ready */
+
+	</script>
+
+}

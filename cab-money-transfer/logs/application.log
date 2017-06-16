@@ -1,0 +1,18 @@
+2015-02-18 14:48:40,976 - [INFO] - from play in pool-6-thread-2 
+Listening for HTTP on /0.0.0.0:9000
+
+2015-02-18 14:50:15,522 - [INFO] - from play in play-internal-execution-context-1 
+datasource [jdbc:postgresql://localhost:5432/cab_remittance] bound to JNDI as DefaultDS
+
+2015-02-18 14:50:16,944 - [INFO] - from play in play-internal-execution-context-1 
+database [default] connected at jdbc:postgresql://localhost:5432/cab_remittance
+
+2015-02-18 14:50:22,022 - [INFO] - from application in play-internal-execution-context-1 
+Application has started.
+
+2015-02-18 14:50:22,709 - [INFO] - from play in play-internal-execution-context-1 
+Application started (Dev)
+
+2015-02-18 15:22:43,989 - [INFO] - from application in pool-6-thread-2 
+Application has stopped.
+

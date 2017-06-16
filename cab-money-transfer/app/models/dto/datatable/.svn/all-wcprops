@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/JAVA/!svn/ver/186/trunk/cab-remittance/app/models/dto/datatable
+END
+AbstractDataTableParams.java
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svn/JAVA/!svn/ver/167/trunk/cab-remittance/app/models/dto/datatable/AbstractDataTableParams.java
+END
+RemittanceReportDataTableParams.java
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/JAVA/!svn/ver/186/trunk/cab-remittance/app/models/dto/datatable/RemittanceReportDataTableParams.java
+END

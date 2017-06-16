@@ -1,0 +1,103 @@
+@CHARSET "ISO-8859-1";
+html {
+	overflow-y:scroll;
+}
+.navbar{
+	padding:7px 0 7px 0;
+	font-weight:bold;
+	background-color: #47639E;
+	border-bottom: solid 1px #1C326C;
+}
+.nav li {
+  -moz-border-radius-topleft: 10px;
+  -moz-border-radius-topright: 10px;
+  -moz-border-radius-bottomright: 0px;
+  -moz-border-radius-bottomleft: 0px;
+  -webkit-border-radius: 10px 10px 0px 0px;
+  border-radius: 10px 10px 0px 0px;
+}
+.navbar-default .navbar-nav > li > a {color: #fff;}
+.page-header h3{margin-top: -10px;}
+
+/* override bootstrap 3 class to remove scrollbar from modal backdrop
+   when not necessary */
+.modal {
+  overflow-y: auto;
+}
+.scrollable-menu {
+    height: auto;
+    max-height: 250px;
+    overflow-x: hidden;
+}
+.theme-showcase{
+	margin-top: 80px;
+}
+.panel-default{
+	 border: 1px solid #7A7A7A;
+	background: #E0E0E0;
+	border-radius: 4px;
+}
+.icon-plus{
+	 border: 1px solid black;
+	  border-radius: 4px;
+ 	  margin-top: 25px;
+  	  padding: 3px;
+  	  text-align: center;
+	   margin-right: -11px;
+}
+.content-wrapper{margin: 90px 0 44px 0;}
+.red{background-color:#F22F38;}
+.footer{
+	background: #A4A4A4;
+	height: 40px;
+}
+#footer{
+	margin: 50px;
+}
+.footer p{
+	padding-top: 10px;
+	color: window;
+}
+.dhtmlxcalendar_in_input{ z-index: 1151 !important ;}
+.block-row{ background-color: #F5B771 !important;}
+.blacklist-row{ background-color: #FA7D7F !important;}
+.bootstrap-switch { display: block;}
+
+.loading-circle{
+	background: url("images/preloader.gif") no-repeat scroll right center / 8% auto rgba(0, 0, 0, 0);
+}
+
+.form-group {
+	margin-bottom: 8px;
+}
+
+/* Paper size 	Width 			Height
+A4 - 72 PPI 	595 Pixels 		842 Pixels
+A4 - 200 PPI 	1654 Pixels 	2339 Pixels
+A4 - 300 PPI 	2480 Pixels 	3508 Pixels
+A4 - 400 PPI 	3307 Pixels 	4677 Pixels
+A4 - 600 PPI 	4961 Pixels 	7016 Pixels
+A4 - 1200 PPI 	9921 Pixels 	14031 Pixels  */
+
+
+@media screen and (min-width: 768px) {
+	#popupRemittanceApplicationForm .modal-dialog  {
+		width:21cm; height: 29.7cm;
+	}
+}
+
+#popupRemittanceApplicationForm{font-family:'Khmer OS System';}
+#popupRemittanceApplicationForm .row{margin:0px;}
+#popupRemittanceApplicationForm .grey{background-color:#D4D0C8;}
+#popupRemittanceApplicationForm .tborder{border-top: solid 1px;}
+#popupRemittanceApplicationForm .bborder{border-bottom: solid 1px;}
+#popupRemittanceApplicationForm .lborder{border-left: solid 1px;}
+#popupRemittanceApplicationForm .rborder{border-right: solid 1px;}
+#popupRemittanceApplicationForm .row.form-content{font-size:9px;}
+#popupRemittanceApplicationForm .row  div{height:100%;}
+#popupRemittanceApplicationForm .row.double{height:45px;}
+#popupRemittanceApplicationForm .row.semi-double{height:35px;}
+#popupRemittanceApplicationForm .row.form-content div{margin-bottom:0;padding:0 2px 4px 5px;}
+
+.col-padding{padding-left: 4px;}
+.col-margin-right {margin-right: 5px;}

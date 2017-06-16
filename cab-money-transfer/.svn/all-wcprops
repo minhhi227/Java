@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 41
+/svn/JAVA/!svn/ver/6/trunk/cab-remittance
+END
+LICENSE
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/JAVA/!svn/ver/5/trunk/cab-remittance/LICENSE
+END
+build.sbt
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/JAVA/!svn/ver/40/trunk/cab-remittance/build.sbt
+END
+activator
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/JAVA/!svn/ver/5/trunk/cab-remittance/activator
+END
+activator-launch-1.2.10.jar
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/JAVA/!svn/ver/5/trunk/cab-remittance/activator-launch-1.2.10.jar
+END
+activator.bat
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/JAVA/!svn/ver/5/trunk/cab-remittance/activator.bat
+END
+README
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/JAVA/!svn/ver/5/trunk/cab-remittance/README
+END

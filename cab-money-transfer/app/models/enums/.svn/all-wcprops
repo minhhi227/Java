@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/JAVA/!svn/ver/160/trunk/cab-remittance/app/models/enums
+END
+TransactionStatus.java
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/JAVA/!svn/ver/160/trunk/cab-remittance/app/models/enums/TransactionStatus.java
+END
+TypeSender.java
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/JAVA/!svn/ver/58/trunk/cab-remittance/app/models/enums/TypeSender.java
+END
+TypeCodeGeneration.java
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/JAVA/!svn/ver/65/trunk/cab-remittance/app/models/enums/TypeCodeGeneration.java
+END
+UserRole.java
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/JAVA/!svn/ver/12/trunk/cab-remittance/app/models/enums/UserRole.java
+END

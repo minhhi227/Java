@@ -1,0 +1,71 @@
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/JAVA/!svn/ver/197/trunk/cab-remittance/app/models
+END
+Receiver.java
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/JAVA/!svn/ver/131/trunk/cab-remittance/app/models/Receiver.java
+END
+User.java
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/JAVA/!svn/ver/171/trunk/cab-remittance/app/models/User.java
+END
+SenderReceiverTransaction.java
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/JAVA/!svn/ver/197/trunk/cab-remittance/app/models/SenderReceiverTransaction.java
+END
+RuleFillAmountManagement.java
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/JAVA/!svn/ver/183/trunk/cab-remittance/app/models/RuleFillAmountManagement.java
+END
+TempCodeGeneration.java
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/JAVA/!svn/ver/187/trunk/cab-remittance/app/models/TempCodeGeneration.java
+END
+Role.java
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/JAVA/!svn/ver/41/trunk/cab-remittance/app/models/Role.java
+END
+Person.java
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/JAVA/!svn/ver/20/trunk/cab-remittance/app/models/Person.java
+END
+Sender.java
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/JAVA/!svn/ver/131/trunk/cab-remittance/app/models/Sender.java
+END
+CurrencyExchange.java
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/JAVA/!svn/ver/197/trunk/cab-remittance/app/models/CurrencyExchange.java
+END
+ModePayment.java
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/JAVA/!svn/ver/41/trunk/cab-remittance/app/models/ModePayment.java
+END
+Branch.java
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/JAVA/!svn/ver/187/trunk/cab-remittance/app/models/Branch.java
+END
