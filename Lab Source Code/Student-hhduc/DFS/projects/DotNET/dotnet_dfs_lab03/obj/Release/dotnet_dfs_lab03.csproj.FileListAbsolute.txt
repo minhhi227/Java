@@ -1,0 +1,1 @@
+C:\Student\DFS\projects\DotNET\dotnet_dfs_lab03\obj\Release\ResolveAssemblyReference.cache

@@ -1,0 +1,2 @@
+C:\Student\DFS\cs_lab03_soln\bin\Release\cs_lab03_soln.exe.config
+C:\Student\DFS\solutions\DotNET\client_library\dotnet_dfs_lab03_soln\bin\Release\cs_lab03_soln.exe.config

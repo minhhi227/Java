@@ -1,0 +1,62 @@
+C:\Student\DFS\solutions\DotNET\client_library\dotnet_dfs_lab03_soln\bin\Debug\DotNETDFS.exe.config
+C:\Student\DFS\solutions\DotNET\client_library\dotnet_dfs_lab03_soln\bin\Debug\DotNETDFS.exe
+C:\Student\DFS\solutions\DotNET\client_library\dotnet_dfs_lab03_soln\bin\Debug\DotNETDFS.pdb
+C:\Student\DFS\solutions\DotNET\client_library\dotnet_dfs_lab03_soln\bin\Debug\Emc.Documentum.FS.DataModel.Bpm.dll
+C:\Student\DFS\solutions\DotNET\client_library\dotnet_dfs_lab03_soln\bin\Debug\Emc.Documentum.FS.DataModel.CI.dll
+C:\Student\DFS\solutions\DotNET\client_library\dotnet_dfs_lab03_soln\bin\Debug\Emc.Documentum.FS.DataModel.Collaboration.dll
+C:\Student\DFS\solutions\DotNET\client_library\dotnet_dfs_lab03_soln\bin\Debug\Emc.Documentum.FS.DataModel.Core.dll
+C:\Student\DFS\solutions\DotNET\client_library\dotnet_dfs_lab03_soln\bin\Debug\Emc.Documentum.FS.DataModel.Shared.dll
+C:\Student\DFS\solutions\DotNET\client_library\dotnet_dfs_lab03_soln\bin\Debug\Emc.Documentum.FS.Runtime.dll
+C:\Student\DFS\solutions\DotNET\client_library\dotnet_dfs_lab03_soln\bin\Debug\Emc.Documentum.FS.Services.Bpm.dll
+C:\Student\DFS\solutions\DotNET\client_library\dotnet_dfs_lab03_soln\bin\Debug\Emc.Documentum.FS.Services.CI.dll
+C:\Student\DFS\solutions\DotNET\client_library\dotnet_dfs_lab03_soln\bin\Debug\Emc.Documentum.FS.Services.Collaboration.dll
+C:\Student\DFS\solutions\DotNET\client_library\dotnet_dfs_lab03_soln\bin\Debug\Emc.Documentum.FS.Services.Core.dll
+C:\Student\DFS\solutions\DotNET\client_library\dotnet_dfs_lab03_soln\bin\Debug\Emc.Documentum.FS.Services.Search.dll
+C:\Student\DFS\solutions\DotNET\client_library\dotnet_dfs_lab03_soln\bin\Debug\Emc.Documentum.FS.DataModel.Core.xml
+C:\Student\DFS\solutions\DotNET\client_library\dotnet_dfs_lab03_soln\bin\Debug\Emc.Documentum.FS.DataModel.Bpm.xml
+C:\Student\DFS\solutions\DotNET\client_library\dotnet_dfs_lab03_soln\bin\Debug\Emc.Documentum.FS.DataModel.Collaboration.xml
+C:\Student\DFS\solutions\DotNET\client_library\dotnet_dfs_lab03_soln\bin\Debug\Emc.Documentum.FS.Services.CI.xml
+C:\Student\DFS\solutions\DotNET\client_library\dotnet_dfs_lab03_soln\bin\Debug\Emc.Documentum.FS.Runtime.xml
+C:\Student\DFS\solutions\DotNET\client_library\dotnet_dfs_lab03_soln\bin\Debug\Emc.Documentum.FS.Services.Collaboration.xml
+C:\Student\DFS\solutions\DotNET\client_library\dotnet_dfs_lab03_soln\bin\Debug\Emc.Documentum.FS.Services.Bpm.xml
+C:\Student\DFS\solutions\DotNET\client_library\dotnet_dfs_lab03_soln\bin\Debug\Emc.Documentum.FS.DataModel.CI.xml
+C:\Student\DFS\solutions\DotNET\client_library\dotnet_dfs_lab03_soln\bin\Debug\Emc.Documentum.FS.Services.Core.xml
+C:\Student\DFS\solutions\DotNET\client_library\dotnet_dfs_lab03_soln\bin\Debug\Emc.Documentum.FS.Services.Search.xml
+C:\Student\DFS\solutions\DotNET\client_library\dotnet_dfs_lab03_soln\bin\Debug\Emc.Documentum.FS.DataModel.Shared.xml
+C:\Student\DFS\solutions\DotNET\client_library\dotnet_dfs_lab03_soln\obj\Debug\ResolveAssemblyReference.cache
+C:\Student\DFS\solutions\DotNET\client_library\dotnet_dfs_lab03_soln\obj\Debug\DotNETDFS.exe
+C:\Student\DFS\solutions\DotNET\client_library\dotnet_dfs_lab03_soln\obj\Debug\DotNETDFS.pdb
+C:\Student\DFS\projects\DotNET\dotnet_dfs_lab03_soln\bin\Debug\DotNETDFS.exe.config
+C:\Student\DFS\projects\DotNET\dotnet_dfs_lab03_soln\obj\Debug\DotNETDFS.exe
+C:\Student\DFS\projects\DotNET\dotnet_dfs_lab03_soln\obj\Debug\DotNETDFS.pdb
+C:\Student\DFS\projects\DotNET\dotnet_dfs_lab03_soln\bin\Debug\DotNETDFS.exe
+C:\Student\DFS\projects\DotNET\dotnet_dfs_lab03_soln\bin\Debug\DotNETDFS.pdb
+C:\Student\DFS\projects\DotNET\dotnet_dfs_lab03_soln\bin\Debug\Emc.Documentum.FS.DataModel.Core.xml
+C:\Student\DFS\projects\DotNET\dotnet_dfs_lab03_soln\bin\Debug\Emc.Documentum.FS.DataModel.Bpm.xml
+C:\Student\DFS\projects\DotNET\dotnet_dfs_lab03_soln\bin\Debug\Emc.Documentum.FS.DataModel.Collaboration.xml
+C:\Student\DFS\projects\DotNET\dotnet_dfs_lab03_soln\bin\Debug\Emc.Documentum.FS.Services.CI.xml
+C:\Student\DFS\projects\DotNET\dotnet_dfs_lab03_soln\bin\Debug\Emc.Documentum.FS.Runtime.xml
+C:\Student\DFS\projects\DotNET\dotnet_dfs_lab03_soln\bin\Debug\Emc.Documentum.FS.Services.Collaboration.xml
+C:\Student\DFS\projects\DotNET\dotnet_dfs_lab03_soln\bin\Debug\Emc.Documentum.FS.Services.Bpm.xml
+C:\Student\DFS\projects\DotNET\dotnet_dfs_lab03_soln\bin\Debug\Emc.Documentum.FS.DataModel.CI.xml
+C:\Student\DFS\projects\DotNET\dotnet_dfs_lab03_soln\bin\Debug\Emc.Documentum.FS.Services.Core.xml
+C:\Student\DFS\projects\DotNET\dotnet_dfs_lab03_soln\bin\Debug\Emc.Documentum.FS.Services.Search.xml
+C:\Student\DFS\projects\DotNET\dotnet_dfs_lab03_soln\bin\Debug\Emc.Documentum.FS.DataModel.Shared.xml
+C:\Student\DFS\projects\DotNET\dotnet_dfs_lab03_soln\obj\Debug\ResolveAssemblyReference.cache
+O:\DataHHDuc\vietinbank\VietinBank DFS\Lab Source Code\Student\DFS\projects\DotNET\dotnet_dfs_lab03_soln\bin\Debug\DotNETDFS.exe.config
+O:\DataHHDuc\vietinbank\VietinBank DFS\Lab Source Code\Student\DFS\projects\DotNET\dotnet_dfs_lab03_soln\obj\Debug\DotNETDFS.exe
+O:\DataHHDuc\vietinbank\VietinBank DFS\Lab Source Code\Student\DFS\projects\DotNET\dotnet_dfs_lab03_soln\obj\Debug\DotNETDFS.pdb
+O:\DataHHDuc\vietinbank\VietinBank DFS\Lab Source Code\Student\DFS\projects\DotNET\dotnet_dfs_lab03_soln\bin\Debug\DotNETDFS.exe
+O:\DataHHDuc\vietinbank\VietinBank DFS\Lab Source Code\Student\DFS\projects\DotNET\dotnet_dfs_lab03_soln\bin\Debug\DotNETDFS.pdb
+O:\DataHHDuc\vietinbank\VietinBank DFS\Lab Source Code\Student\DFS\projects\DotNET\dotnet_dfs_lab03_soln\bin\Debug\Emc.Documentum.FS.DataModel.Core.xml
+O:\DataHHDuc\vietinbank\VietinBank DFS\Lab Source Code\Student\DFS\projects\DotNET\dotnet_dfs_lab03_soln\bin\Debug\Emc.Documentum.FS.DataModel.Bpm.xml
+O:\DataHHDuc\vietinbank\VietinBank DFS\Lab Source Code\Student\DFS\projects\DotNET\dotnet_dfs_lab03_soln\bin\Debug\Emc.Documentum.FS.DataModel.Collaboration.xml
+O:\DataHHDuc\vietinbank\VietinBank DFS\Lab Source Code\Student\DFS\projects\DotNET\dotnet_dfs_lab03_soln\bin\Debug\Emc.Documentum.FS.Services.CI.xml
+O:\DataHHDuc\vietinbank\VietinBank DFS\Lab Source Code\Student\DFS\projects\DotNET\dotnet_dfs_lab03_soln\bin\Debug\Emc.Documentum.FS.Runtime.xml
+O:\DataHHDuc\vietinbank\VietinBank DFS\Lab Source Code\Student\DFS\projects\DotNET\dotnet_dfs_lab03_soln\bin\Debug\Emc.Documentum.FS.Services.Collaboration.xml
+O:\DataHHDuc\vietinbank\VietinBank DFS\Lab Source Code\Student\DFS\projects\DotNET\dotnet_dfs_lab03_soln\bin\Debug\Emc.Documentum.FS.Services.Bpm.xml
+O:\DataHHDuc\vietinbank\VietinBank DFS\Lab Source Code\Student\DFS\projects\DotNET\dotnet_dfs_lab03_soln\bin\Debug\Emc.Documentum.FS.DataModel.CI.xml
+O:\DataHHDuc\vietinbank\VietinBank DFS\Lab Source Code\Student\DFS\projects\DotNET\dotnet_dfs_lab03_soln\bin\Debug\Emc.Documentum.FS.Services.Core.xml
+O:\DataHHDuc\vietinbank\VietinBank DFS\Lab Source Code\Student\DFS\projects\DotNET\dotnet_dfs_lab03_soln\bin\Debug\Emc.Documentum.FS.Services.Search.xml
+O:\DataHHDuc\vietinbank\VietinBank DFS\Lab Source Code\Student\DFS\projects\DotNET\dotnet_dfs_lab03_soln\bin\Debug\Emc.Documentum.FS.DataModel.Shared.xml
+O:\DataHHDuc\vietinbank\VietinBank DFS\Lab Source Code\Student\DFS\projects\DotNET\dotnet_dfs_lab03_soln\obj\Debug\ResolveAssemblyReference.cache

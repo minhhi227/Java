@@ -1,0 +1,108 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{EAC688B7-CA57-4847-9D4D-A5770BF9643D}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DotNETDFS</RootNamespace>
+    <AssemblyName>DotNETDFS</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <StartupObject>DotNETDFS.DFSMain</StartupObject>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Emc.Documentum.FS.DataModel.Bpm, Version=6.6.0.38, Culture=neutral, PublicKeyToken=f7c256ad97a54f3d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\emc-dfs-sdk-6.6\lib\dotnet\Emc.Documentum.FS.DataModel.Bpm.dll</HintPath>
+    </Reference>
+    <Reference Include="Emc.Documentum.FS.DataModel.CI, Version=6.6.0.38, Culture=neutral, PublicKeyToken=f7c256ad97a54f3d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\emc-dfs-sdk-6.6\lib\dotnet\Emc.Documentum.FS.DataModel.CI.dll</HintPath>
+    </Reference>
+    <Reference Include="Emc.Documentum.FS.DataModel.Collaboration, Version=6.6.0.38, Culture=neutral, PublicKeyToken=f7c256ad97a54f3d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\emc-dfs-sdk-6.6\lib\dotnet\Emc.Documentum.FS.DataModel.Collaboration.dll</HintPath>
+    </Reference>
+    <Reference Include="Emc.Documentum.FS.DataModel.Core, Version=6.6.0.38, Culture=neutral, PublicKeyToken=f7c256ad97a54f3d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\emc-dfs-sdk-6.6\lib\dotnet\Emc.Documentum.FS.DataModel.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Emc.Documentum.FS.DataModel.Shared, Version=6.6.0.38, Culture=neutral, PublicKeyToken=f7c256ad97a54f3d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\emc-dfs-sdk-6.6\lib\dotnet\Emc.Documentum.FS.DataModel.Shared.dll</HintPath>
+    </Reference>
+    <Reference Include="Emc.Documentum.FS.Runtime, Version=6.6.0.38, Culture=neutral, PublicKeyToken=f7c256ad97a54f3d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\emc-dfs-sdk-6.6\lib\dotnet\Emc.Documentum.FS.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="Emc.Documentum.FS.Services.Bpm, Version=6.6.0.38, Culture=neutral, PublicKeyToken=f7c256ad97a54f3d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\emc-dfs-sdk-6.6\lib\dotnet\Emc.Documentum.FS.Services.Bpm.dll</HintPath>
+    </Reference>
+    <Reference Include="Emc.Documentum.FS.Services.CI, Version=6.6.0.38, Culture=neutral, PublicKeyToken=f7c256ad97a54f3d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\emc-dfs-sdk-6.6\lib\dotnet\Emc.Documentum.FS.Services.CI.dll</HintPath>
+    </Reference>
+    <Reference Include="Emc.Documentum.FS.Services.Collaboration, Version=6.6.0.38, Culture=neutral, PublicKeyToken=f7c256ad97a54f3d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\emc-dfs-sdk-6.6\lib\dotnet\Emc.Documentum.FS.Services.Collaboration.dll</HintPath>
+    </Reference>
+    <Reference Include="Emc.Documentum.FS.Services.Core, Version=6.6.0.38, Culture=neutral, PublicKeyToken=f7c256ad97a54f3d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\emc-dfs-sdk-6.6\lib\dotnet\Emc.Documentum.FS.Services.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Emc.Documentum.FS.Services.Search, Version=6.6.0.38, Culture=neutral, PublicKeyToken=f7c256ad97a54f3d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\emc-dfs-sdk-6.6\lib\dotnet\Emc.Documentum.FS.Services.Search.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DFSLogic.cs" />
+    <Compile Include="DFSMain.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

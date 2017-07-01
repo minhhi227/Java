@@ -1,0 +1,2 @@
+C:\Student\DFS\projects\DotNET\client_library\dotnet_dfs_lab03\bin\Debug\DotNETDFS.exe.config
+C:\Student\DFS\projects\DotNET\dotnet_dfs_lab03\bin\Debug\DotNETDFS.exe.config
